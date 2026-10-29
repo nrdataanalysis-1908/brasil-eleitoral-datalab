@@ -134,7 +134,7 @@ Legenda: [x] concluído e publicado; [ ] ainda não implementado ou não validad
 - [x] Extrator ZIP seguro com limites, validação de integridade e testes (CI validada).
 - [x] Contratos de dados versionados e validações automatizadas (CI validada).
 - [x] Pipeline inicial Bronze/Silver/Gold com hashes, metadados, normalização CSV e agregação por granularidade explícita (fixtures locais; Parquet/DuckDB pendentes).
-- [ ] Primeira integração de resultados eleitorais validada de ponta a ponta.
+- [x] Pipeline ponta a ponta validado com fixture normalizada local (ingestão, contrato, Silver e Gold); integração com recurso oficial real do TSE ainda pendente.
 
 ### Aplicações e operação
 - [x] API Node.js / TypeScript com health checks e endpoints de leitura do catálogo (testes automatizados).
@@ -143,7 +143,7 @@ Legenda: [x] concluído e publicado; [ ] ainda não implementado ou não validad
 - [x] Testes automatizados do cliente e do catálogo CKAN (respostas simuladas).
 - [x] Workflow de CI para executar a suíte de testes.
 - [x] Documentação de instalação, execução e exemplos reproduzíveis para descoberta, downloads, extração, contratos e medallion.
-- [ ] Monitoramento, logs estruturados e tratamento operacional de falhas.
+- [x] Logs JSON estruturados, códigos de saída e tratamento de falhas no pipeline local; [ ] monitoramento gerenciado, alertas e observabilidade de produção.
 
 Os itens marcados como concluídos correspondem somente ao que já está versionado no repositório. Itens planejados permanecem desmarcados até que exista implementação publicada e validação correspondente. Esta lista será atualizada a cada entrega.
 
@@ -155,9 +155,10 @@ Requer Python 3.10 ou superior. Instale o projeto e execute o coletor:
 python -m pip install -e ".[dev]"
 python scripts/discover_tse_catalog.py
 python scripts/download_tse_resources.py
+python scripts/process_election_results.py --input examples/election-results-normalized.csv --contract contracts/tse/election-results.v1.json --output data --dimensions election_year state_code office
 ```
 
-O comando consulta o catálogo público do TSE, percorre as páginas da API e grava um JSON por conjunto em `catalog/tse/datasets/`, além de `manifest.json` e checkpoint. Os arquivos gerados são locais e estão excluídos do Git para evitar commits de snapshots extensos e variáveis. Consulte [docs/ckan-discovery.md](docs/ckan-discovery.md), [docs/resource-downloads.md](docs/resource-downloads.md), [docs/safe-extraction.md](docs/safe-extraction.md), [docs/data-contracts.md](docs/data-contracts.md), [docs/medallion-pipeline.md](docs/medallion-pipeline.md), [docs/api.md](docs/api.md) e [docs/streamlit.md](docs/streamlit.md) para opções, formatos e limitações dos componentes.
+O comando consulta o catálogo público do TSE, percorre as páginas da API e grava um JSON por conjunto em `catalog/tse/datasets/`, além de `manifest.json` e checkpoint. Os arquivos gerados são locais e estão excluídos do Git para evitar commits de snapshots extensos e variáveis. Consulte [docs/ckan-discovery.md](docs/ckan-discovery.md), [docs/resource-downloads.md](docs/resource-downloads.md), [docs/safe-extraction.md](docs/safe-extraction.md), [docs/data-contracts.md](docs/data-contracts.md), [docs/medallion-pipeline.md](docs/medallion-pipeline.md), [docs/api.md](docs/api.md) e [docs/streamlit.md](docs/streamlit.md), [docs/operations.md](docs/operations.md) e [docs/api.md](docs/api.md) para opções, formatos e limitações dos componentes.
 
 A descoberta CKAN e o downloader possuem testes automatizados com respostas simuladas e passam no workflow de CI. A disponibilidade real, o total atual de conjuntos e a conclusão de uma coleta integral de metadados/recursos ainda precisam ser confirmados executando os comandos contra o portal em ambiente com acesso à internet.
 
