@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 type Dataset = Record<string, unknown>;
-type CatalogState = { generated?: boolean; datasets?: Dataset[]; packages?: Dataset[]; catalog?: unknown; message?: string };
+type CatalogState = { generated?: boolean; datasets?: Dataset[]; packages?: Dataset[]; dataset_count?: number; complete?: boolean; message?: string };
 
 function str(value: unknown): string {
   return typeof value === "string" ? value : "";
@@ -65,7 +65,7 @@ export default function Home() {
   },[datasets]);
   const organizations=useMemo(()=>{
     const counts:Record<string,number>={};
-    datasets.forEach(d=>{const org=d.organization as Dataset|undefined;const name=str(org?.title)||str(org?.name)||"Sem órgão";counts[name]=(counts[name]||0)+1;});
+    datasets.forEach(d=>{const org=d.organization;const name=typeof org==="string"?org:(str((org as Dataset|undefined)?.title)||str((org as Dataset|undefined)?.name)||"Sem órgão");counts[name]=(counts[name]||0)+1;});
     return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([label,value])=>({label,value}));
   },[datasets]);
   const resources=datasets.reduce((sum,d)=>sum+(Array.isArray(d.resources)?d.resources.length:0),0);
