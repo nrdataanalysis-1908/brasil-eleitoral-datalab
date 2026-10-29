@@ -62,9 +62,10 @@ def bronze_ingest(source: Path, root: Path, *, source_id: str, dataset: str,
     destination_dir.mkdir(parents=True, exist_ok=True)
     destination = destination_dir / f"{digest}{source.suffix.lower()}"
     metadata_path = destination.with_suffix(destination.suffix + ".metadata.json")
-    if destination.exists() and sha256_file(destination) != digest:
+    already_present = destination.exists()
+    if already_present and sha256_file(destination) != digest:
         raise MedallionError("Existing Bronze object does not match its content hash")
-    if not destination.exists():
+    if not already_present:
         fd, temporary = tempfile.mkstemp(prefix=".bronze.", dir=destination_dir)
         os.close(fd)
         try:
@@ -89,7 +90,7 @@ def bronze_ingest(source: Path, root: Path, *, source_id: str, dataset: str,
         _atomic_json(metadata_path, metadata)
     return {"path": str(destination), "metadata_path": str(metadata_path),
             "sha256": digest, "size_bytes": destination.stat().st_size,
-            "already_present": metadata_path.exists() and destination.exists()}
+            "already_present": already_present}
 
 
 def _normalize_header(value: str) -> str:
@@ -175,9 +176,9 @@ def gold_aggregate_results(source: Path, destination: Path, *,
     try:
         with open(temporary, "w", encoding="utf-8", newline="") as stream:
             writer = csv.writer(stream)
-            writer.writerow([*dimensions, f"total_{metric}", "source_rows"])
+            writer.writerow([*dimensions, f"total_{metric}"])
             for key in sorted(totals):
-                writer.writerow([*key, format(totals[key], "f"), ""])
+                writer.writerow([*key, format(totals[key], "f")])
             stream.flush()
             os.fsync(stream.fileno())
         os.replace(temporary, destination)
