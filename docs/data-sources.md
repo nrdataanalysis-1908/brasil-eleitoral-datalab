@@ -66,3 +66,8 @@ Antes de classificar um dataset como disponível ou integrado:
 7. Só então planejar e executar a ingestão.
 
 Não presumir que todos os datasets possuam licença, periodicidade ou granularidade uniformes.
+
+
+## Coletor implementado
+
+O coletor inicial está disponível em `scripts/discover_tse_catalog.py`. Ele usa `package_search` com paginação, preserva metadados de conjuntos e recursos, grava arquivos JSON por conjunto e mantém manifesto/checkpoint com gravação atômica. A execução e as opções estão documentadas em [docs/ckan-discovery.md](ckan-discovery.md). A suíte automatizada cobre paginação, retomada, normalização, validação de slug e retry HTTP usando respostas simuladas; isso não substitui uma execução de integração contra o portal real.
