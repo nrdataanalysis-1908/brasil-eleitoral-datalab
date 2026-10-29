@@ -8,14 +8,15 @@
   <a href="https://dadosabertos.tse.jus.br/">Dados Abertos do TSE</a> ·
   <a href="docs/architecture/overview.md">Arquitetura</a> ·
   <a href="catalog/sources/tse.yml">Catálogo de fontes</a> ·
-  <a href="CONTRIBUTING.md">Contribuição</a>
+  <a href="CONTRIBUTING.md">Contribuição</a> ·
+  <a href="LICENSE">Licença MIT</a>
 </p>
 
 O Brasil Eleitoral DataLab é uma iniciativa independente para descobrir, documentar, integrar, validar e analisar dados públicos relacionados ao processo eleitoral brasileiro. O objetivo é oferecer um ponto de entrada técnico para pesquisadores, jornalistas, estudantes, desenvolvedores e cidadãos interessados em explorar dados eleitorais com rastreabilidade e reprodutibilidade.
 
 O projeto não se limita à auditoria de urnas eletrônicas. Seu escopo abrange resultados eleitorais, candidaturas, eleitorado, partidos, financiamento de campanhas, pesquisas eleitorais, boletins de urna, arquivos técnicos de totalização, geografia eleitoral e documentação institucional.
 
-> **Estado atual:** fundação documental e catálogo inicial em construção. Os domínios listados representam o escopo de descoberta; não significam que os dados já tenham sido baixados, tratados ou integrados. A situação de cada conjunto será registrada individualmente no catálogo.
+> **Estado atual:** fundação documental, arquitetura inicial e catálogo de fontes implementados. Os domínios listados representam o escopo de descoberta; não significam que os dados já tenham sido baixados, tratados ou integrados. A situação de cada conjunto será registrada individualmente no catálogo.
 
 ## Escopo de dados
 
@@ -114,17 +115,36 @@ A estrutura será materializada incrementalmente. Diretórios ainda sem implemen
 
 ## Situação do desenvolvimento
 
+Legenda: [x] concluído e publicado; [ ] ainda não implementado ou não validado.
+
+### Fundação e governança
 - [x] Definição do escopo multidomínio.
-- [x] Definição da arquitetura híbrida.
-- [x] Padrão inicial de metadados e catálogo de fontes.
-- [ ] Descoberta automatizada dos conjuntos CKAN.
-- [ ] Primeiro pipeline de download com checksum e manifesto.
-- [ ] Extrator ZIP seguro e testes automatizados.
-- [ ] Contratos de dados e validações.
-- [ ] Primeira integração de resultados eleitorais.
-- [ ] API e interface web.
+- [x] Definição da arquitetura híbrida e separação entre componentes.
+- [x] Documentação inicial da arquitetura.
+- [x] Princípios de qualidade, proveniência, segurança e metodologia.
+- [x] Padrão inicial de metadados para conjuntos de dados.
+- [x] Registro inicial da fonte oficial do TSE.
+- [x] Configuração inicial do `.gitignore`.
+- [x] Inclusão da licença MIT para o código e a documentação originais do projeto.
+
+### Engenharia de dados
+- [ ] Cliente CKAN com paginação, descoberta e coleta automatizada de metadados.
+- [ ] Normalização e persistência do catálogo descoberto.
+- [ ] Pipeline de download com retomada, checksum e manifesto.
+- [ ] Extrator ZIP seguro com limites, validação de integridade e testes.
+- [ ] Contratos de dados e validações automatizadas.
+- [ ] Camadas Bronze, Silver e Gold implementadas.
+- [ ] Primeira integração de resultados eleitorais validada de ponta a ponta.
+
+### Aplicações e operação
+- [ ] API Node.js / TypeScript.
+- [ ] Interface web Next.js.
 - [ ] Aplicação Streamlit de exploração.
-- [ ] CI, documentação de uso e exemplos reproduzíveis.
+- [ ] Testes automatizados e integração contínua (CI).
+- [ ] Documentação de instalação, execução e exemplos reproduzíveis.
+- [ ] Monitoramento, logs estruturados e tratamento operacional de falhas.
+
+Os itens marcados como concluídos correspondem somente ao que já está versionado no repositório. Itens planejados permanecem desmarcados até que exista implementação publicada e validação correspondente. Esta lista será atualizada a cada entrega.
 
 ## Como começar
 
@@ -142,4 +162,6 @@ Não publique arquivos brutos volumosos no Git. Prefira manifests, metadados, am
 
 ## Licença
 
-A licença do repositório ainda será definida. Até que um arquivo de licença seja incluído, não presuma autorização para reutilização ou redistribuição do código deste projeto. As condições de uso dos dados devem ser verificadas individualmente nos metadados de cada fonte.
+Este projeto é distribuído sob a licença [MIT](LICENSE).
+
+A licença MIT aplica-se ao código-fonte e à documentação original deste repositório. Ela não substitui nem altera as licenças, termos de uso, direitos de terceiros ou condições de redistribuição dos conjuntos de dados, arquivos, marcas e materiais obtidos de fontes externas. Antes de redistribuir qualquer dado, consulte os metadados e as condições publicados pelo órgão responsável.
