@@ -43,3 +43,7 @@ data/
 Thumbs.db
 .vscode/
 .idea/
+
+# Generated TSE CKAN catalog metadata and checkpoints
+catalog/tse/datasets/
+catalog/tse/.ckan_checkpoint.json
