@@ -1,0 +1,49 @@
+# Modelo de registro de conjunto de dados.
+# Copie este arquivo para um novo YAML e substitua os campos.
+id: "<identificador-interno>"
+title: "<título oficial do conjunto>"
+description: "<descrição objetiva>"
+source_id: "tse"
+source_dataset_id: null
+official_url: null
+domain: "<results|candidacies|electorate|voting_machines|campaign_finance|polls|parties|geography|other>"
+election_year: null
+election_round: null
+temporal_coverage:
+  start: null
+  end: null
+geographic_coverage:
+  country: "BR"
+  subdivisions: []
+granularity:
+  geographic: null
+  temporal: null
+  record: null
+resources: []
+# Cada recurso deve registrar id oficial, URL, formato, tamanho e checksum quando conhecidos.
+schema:
+  dictionary_url: null
+  fields_documented: false
+  primary_keys: []
+  foreign_keys: []
+formats: []
+license:
+  identifier: null
+  url: null
+  verified: false
+update_frequency: null
+extraction:
+  last_checked_at: null
+  last_downloaded_at: null
+  checksum_algorithm: "sha256"
+  checksum: null
+integration:
+  status: "discovered"
+  bronze: false
+  silver: false
+  gold: false
+quality:
+  tests_defined: false
+  last_validation_at: null
+limitations: []
+notes: []
