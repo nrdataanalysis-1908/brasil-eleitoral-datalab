@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+.next/
+dist/
+coverage/
+
+# Environments and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local data and processing artifacts
+data/
+*.parquet
+*.feather
+*.duckdb
+*.sqlite
+*.db
+*.zip
+*.csv
+*.xlsx
+*.xls
+*.jsonl
+
+# Exceptions: small, explicitly curated fixtures may be committed under tests/fixtures.
+!tests/fixtures/**/*.csv
+!tests/fixtures/**/*.json
+!tests/fixtures/**/*.jsonl
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
