@@ -36,7 +36,11 @@ class ContractValidationTests(unittest.TestCase):
         self.assertIn("duplicate_primary_key", codes)
 
     def test_detects_missing_and_null_fields(self):
-        report = validate_records([{"year": 2022, "candidate_id": None}], self.contract)
+        contract = DataContract(
+            name="election_results", version=1, fields=self.contract.fields,
+            primary_key=self.contract.primary_key, minimum_rows=2,
+        )
+        report = validate_records([{"year": 2022, "candidate_id": None}], contract)
         codes = {error["code"] for error in report.errors}
         self.assertIn("missing_field", codes)
         self.assertIn("null_not_allowed", codes)
