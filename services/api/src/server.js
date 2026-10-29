@@ -36,9 +36,33 @@ export async function handleRequest(request, response, root = repositoryRoot) {
   }
   if (url.pathname === "/api/v1/catalog") {
     try {
-      const manifestPath = resolve(root, "catalog/tse/datasets/manifest.json");
-      const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-      return send(200, { source: "tse", generated: true, catalog: manifest });
+      const catalogDir = resolve(root, "catalog/tse/datasets");
+      const manifest = JSON.parse(await readFile(resolve(catalogDir, "manifest.json"), "utf8"));
+      const entries = Array.isArray(manifest.datasets) ? manifest.datasets : [];
+      const datasets = await Promise.all(entries.map(async (entry) => {
+        const relativePath = typeof entry.path === "string" ? entry.path : "";
+        // Manifest entries must be plain JSON filenames inside the catalog directory.
+        if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.json$/.test(relativePath)) return null;
+        try {
+          const dataset = JSON.parse(await readFile(resolve(catalogDir, relativePath), "utf8"));
+          return {
+            id: dataset.id, name: dataset.name, title: dataset.title,
+            notes: dataset.notes, description: dataset.notes,
+            organization: dataset.organization || "Sem órgão",
+            metadata_modified: dataset.metadata_modified,
+            resources: Array.isArray(dataset.resources) ? dataset.resources : [],
+          };
+        } catch {
+          return null;
+        }
+      }));
+      const available = datasets.filter(Boolean);
+      return send(200, {
+        source: "tse", generated: true, complete: Boolean(manifest.complete),
+        discovered_at: manifest.discovered_at,
+        dataset_count: Number(manifest.dataset_count || available.length),
+        datasets: available,
+      });
     } catch (error) {
       if (error.code === "ENOENT") {
         return send(200, { source: "tse", generated: false, datasets: [],
