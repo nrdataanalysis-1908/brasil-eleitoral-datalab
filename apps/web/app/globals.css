@@ -1,0 +1,13 @@
+:root { color-scheme: dark; --bg: #071019; --panel: #101e2a; --cyan: #60e6ff; --muted: #a8bac8; }
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(circle at 80% 0%, #123044 0, var(--bg) 48%); color: #edf7fc; font-family: Arial, Helvetica, sans-serif; }
+.shell { max-width: 1080px; margin: 0 auto; padding: 12vh 28px 48px; min-height: 100vh; }
+.eyebrow { color: var(--cyan); letter-spacing: .18em; font-size: .75rem; }
+h1 { font-size: clamp(2.5rem, 7vw, 5.2rem); line-height: 1.02; margin: 20px 0; }
+h1 em { color: var(--cyan); font-style: normal; }
+header p, footer { color: var(--muted); line-height: 1.7; }
+.panel { margin-top: 64px; max-width: 720px; padding: 30px; border: 1px solid #244052; border-radius: 16px; background: var(--panel); }
+.panel p { color: var(--muted); line-height: 1.7; }
+a { color: var(--cyan); text-decoration: none; }
+a:hover { text-decoration: underline; }
+footer { margin-top: 56px; font-size: .85rem; }
