@@ -1,0 +1,4 @@
+election_year,election_round,state_code,municipality_code,office,candidate_id,candidate_name,party_number,votes,source_resource_id
+2022,1,MG,3106200,GOVERNOR,CAND-001,Candidate A,10,120000,fixture-resource
+2022,1,MG,3106200,GOVERNOR,CAND-002,Candidate B,20,95000,fixture-resource
+2022,1,SP,3550308,GOVERNOR,CAND-003,Candidate C,30,210000,fixture-resource
