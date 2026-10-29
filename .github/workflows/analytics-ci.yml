@@ -1,0 +1,21 @@
+name: Analytics CI
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/analytics/**"
+      - ".github/workflows/analytics-ci.yml"
+  pull_request:
+    paths:
+      - "apps/analytics/**"
+      - ".github/workflows/analytics-ci.yml"
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile Streamlit application
+        run: python -m py_compile apps/analytics/app.py
