@@ -1,0 +1,39 @@
+id: tse
+name: Tribunal Superior Eleitoral
+acronym: TSE
+role: primary
+base_url: https://dadosabertos.tse.jus.br/
+catalog_url: https://dadosabertos.tse.jus.br/dataset/
+platform: CKAN
+api:
+  version: "3"
+  base_url: https://dadosabertos.tse.jus.br/api/3/action/
+  endpoints:
+    package_search: package_search
+    package_show: package_show
+    resource_show: resource_show
+discovery:
+  strategy: ckan_package_search
+  query: "*:*"
+  notes:
+    - "Consultar a API para descobrir conjuntos e recursos; não fixar contagens no código."
+    - "Preservar o identificador CKAN do conjunto e o identificador de cada recurso."
+    - "Verificar os metadados e a licença de cada conjunto antes de redistribuir dados."
+domains:
+  - results
+  - candidacies
+  - electorate
+  - voting_machines
+  - vote_records
+  - campaign_finance
+  - polls
+  - parties
+  - electoral_processes
+  - electoral_support
+geographic_coverage: Brazil
+language: pt-BR
+authentication: not_required_for_public_resources
+license_policy: verify_per_dataset
+status: cataloged
+last_verified: "2026-10-29"
+verification_notes: "Portal consultado durante a estruturação inicial. Quantidades e recursos são dinâmicos; consultar a API para obter o estado atual."
