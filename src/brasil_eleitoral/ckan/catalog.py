@@ -82,6 +82,6 @@ def discover_catalog(client: CKANClient, output_dir: Path, *, page_size: int = 1
         "api": f"{client.base_url}/api/3/action/", "action": "package_search",
         "discovered_at": datetime.now(timezone.utc).isoformat(), "dataset_count": len(seen),
         "remote_count": total, "complete": total is not None and len(seen) >= total,
-        "datasets": [{"name": name, "sha256": digest, "path": f"datasets/{name}.json"} for name, digest in sorted(seen.items())]}
+        "datasets": [{"name": name, "sha256": digest, "path": f"{name}.json"} for name, digest in sorted(seen.items())]}
     _atomic_json(output_dir / "manifest.json", manifest)
     return manifest
