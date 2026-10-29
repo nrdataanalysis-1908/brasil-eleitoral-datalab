@@ -1,0 +1,19 @@
+{
+  "name": "tse_election_results",
+  "version": 1,
+  "description": "Generic normalized contract for aggregated election-result records; source-specific mappings must be documented before production use.",
+  "fields": [
+    {"name": "election_year", "type": "integer"},
+    {"name": "election_round", "type": "integer", "allowed_values": [1, 2]},
+    {"name": "state_code", "type": "string"},
+    {"name": "municipality_code", "type": "string"},
+    {"name": "office", "type": "string"},
+    {"name": "candidate_id", "type": "string"},
+    {"name": "candidate_name", "type": "string"},
+    {"name": "party_number", "type": "string"},
+    {"name": "votes", "type": "integer"},
+    {"name": "source_resource_id", "type": "string"}
+  ],
+  "primary_key": ["election_year", "election_round", "municipality_code", "office", "candidate_id"],
+  "minimum_rows": 1
+}
