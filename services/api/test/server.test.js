@@ -42,3 +42,35 @@ test("unknown routes and non-GET methods are rejected", async () => {
     await rm(root, { recursive: true, force: true });
   }
 });
+
+
+test("catalog endpoint expands manifest entries into dashboard datasets", async () => {
+  const root = await mkdtemp(join(tmpdir(), "electoral-api-catalog-"));
+  const catalogDir = join(root, "catalog/tse/datasets");
+  await mkdir(catalogDir, { recursive: true });
+  await writeFile(join(catalogDir, "resultados.json"), JSON.stringify({
+    id: "dataset-1", name: "resultados", title: "Resultados eleitorais",
+    notes: "Dados de votação", organization: "Tribunal Superior Eleitoral",
+    metadata_modified: "2026-10-01", resources: [{ id: "resource-1", format: "CSV" }]
+  }));
+  await writeFile(join(catalogDir, "manifest.json"), JSON.stringify({
+    complete: true, dataset_count: 1, discovered_at: "2026-10-29T00:00:00Z",
+    datasets: [{ name: "resultados", path: "resultados.json", sha256: "abc" }]
+  }));
+  const server = createApiServer(root);
+  await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
+  const base = "http://127.0.0.1:" + server.address().port;
+  try {
+    const response = await fetch(base + "/api/v1/catalog");
+    const body = await response.json();
+    assert.equal(response.status, 200);
+    assert.equal(body.generated, true);
+    assert.equal(body.datasets.length, 1);
+    assert.equal(body.datasets[0].title, "Resultados eleitorais");
+    assert.equal(body.datasets[0].organization, "Tribunal Superior Eleitoral");
+    assert.equal(body.datasets[0].resources[0].format, "CSV");
+  } finally {
+    await new Promise(resolve => server.close(resolve));
+    await rm(root, { recursive: true, force: true });
+  }
+});
