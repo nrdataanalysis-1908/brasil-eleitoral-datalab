@@ -128,8 +128,8 @@ Legenda: [x] concluído e publicado; [ ] ainda não implementado ou não validad
 - [x] Inclusão da licença MIT para o código e a documentação originais do projeto.
 
 ### Engenharia de dados
-- [ ] Cliente CKAN com paginação, descoberta e coleta automatizada de metadados.
-- [ ] Normalização e persistência do catálogo descoberto.
+- [x] Cliente CKAN com paginação, descoberta e coleta automatizada de metadados (implementado; consulta real ainda depende de execução no ambiente).
+- [x] Normalização de metadados e exportação local em JSON, com manifesto SHA-256 e checkpoint de retomada.
 - [ ] Pipeline de download com retomada, checksum e manifesto.
 - [ ] Extrator ZIP seguro com limites, validação de integridade e testes.
 - [ ] Contratos de dados e validações automatizadas.
@@ -140,15 +140,25 @@ Legenda: [x] concluído e publicado; [ ] ainda não implementado ou não validad
 - [ ] API Node.js / TypeScript.
 - [ ] Interface web Next.js.
 - [ ] Aplicação Streamlit de exploração.
-- [ ] Testes automatizados e integração contínua (CI).
+- [x] Testes automatizados do cliente e do catálogo CKAN (respostas simuladas).
+- [x] Workflow de CI para executar a suíte de testes.
 - [ ] Documentação de instalação, execução e exemplos reproduzíveis.
 - [ ] Monitoramento, logs estruturados e tratamento operacional de falhas.
 
 Os itens marcados como concluídos correspondem somente ao que já está versionado no repositório. Itens planejados permanecem desmarcados até que exista implementação publicada e validação correspondente. Esta lista será atualizada a cada entrega.
 
-## Como começar
+## Como executar a descoberta CKAN
 
-Nesta fase, consulte a documentação de arquitetura e os registros em `catalog/`. Os primeiros pipelines serão adicionados depois que os metadados e formatos dos recursos forem verificados diretamente na fonte.
+Requer Python 3.10 ou superior. Instale o projeto e execute o coletor:
+
+```bash
+python -m pip install -e ".[dev]"
+python scripts/discover_tse_catalog.py
+```
+
+O comando consulta o catálogo público do TSE, percorre as páginas da API e grava um JSON por conjunto em `catalog/tse/datasets/`, além de `manifest.json` e checkpoint. Os arquivos gerados são locais e estão excluídos do Git para evitar commits de snapshots extensos e variáveis. Consulte [docs/ckan-discovery.md](docs/ckan-discovery.md) para opções, formato e limitações.
+
+A implementação foi testada com respostas simuladas. A disponibilidade real, o total atual de conjuntos e a conclusão de uma coleta integral ainda precisam ser confirmados executando o comando contra o portal em ambiente com acesso à internet.
 
 Não publique arquivos brutos volumosos no Git. Prefira manifests, metadados, amostras pequenas e dados derivados cuja redistribuição seja permitida pela fonte.
 
