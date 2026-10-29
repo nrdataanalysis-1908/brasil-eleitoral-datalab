@@ -1,0 +1,97 @@
+import hashlib
+import json
+import tempfile
+import unittest
+from email.message import Message
+from pathlib import Path
+from unittest.mock import patch
+
+from brasil_eleitoral.ingestion.downloader import (
+    DownloadError, download_resource, download_resources,
+)
+
+
+class FakeResponse:
+    def __init__(self, body, status=200, headers=None):
+        self.body = body
+        self.status = status
+        self.headers = Message()
+        for key, value in (headers or {}).items():
+            self.headers[key] = value
+        self.position = 0
+
+    def __enter__(self): return self
+    def __exit__(self, *args): return None
+    def getcode(self): return self.status
+    def read(self, size=-1):
+        if size < 0: size = len(self.body) - self.position
+        chunk = self.body[self.position:self.position + size]
+        self.position += len(chunk)
+        return chunk
+
+
+class DownloaderTests(unittest.TestCase):
+    @patch("brasil_eleitoral.ingestion.downloader.urlopen")
+    def test_download_and_sha256(self, urlopen):
+        payload = b"electoral-data"
+        urlopen.return_value = FakeResponse(payload, headers={"Content-Length": str(len(payload)), "ETag": '"v1"'})
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "resource.csv"
+            result = download_resource("https://example.test/resource.csv", target)
+            self.assertEqual(target.read_bytes(), payload)
+            self.assertEqual(result["checksum"], hashlib.sha256(payload).hexdigest())
+            self.assertEqual(result["status"], "verified")
+
+    @patch("brasil_eleitoral.ingestion.downloader.urlopen")
+    def test_checksum_mismatch_never_publishes_file(self, urlopen):
+        urlopen.return_value = FakeResponse(b"bad", headers={"Content-Length": "3", "ETag": '"v1"'})
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "resource.csv"
+            with self.assertRaises(DownloadError):
+                download_resource("https://example.test/data", target, expected_checksum="0" * 64)
+            self.assertFalse(target.exists())
+            self.assertTrue(target.with_name(target.name + ".part").exists())
+
+    @patch("brasil_eleitoral.ingestion.downloader.urlopen")
+    def test_resume_uses_range_and_appends_on_206(self, urlopen):
+        payload = b"abcdefghij"
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "data.bin"
+            partial = target.with_name(target.name + ".part")
+            partial.write_bytes(payload[:4])
+            partial.with_name(partial.name + ".json").write_text(json.dumps({
+                "url": "https://example.test/data", "etag": '"v1"'
+            }))
+            urlopen.return_value = FakeResponse(payload[4:], status=206, headers={
+                "Content-Range": "bytes 4-9/10", "Content-Length": "6", "ETag": '"v1"'
+            })
+            result = download_resource("https://example.test/data", target)
+            self.assertEqual(target.read_bytes(), payload)
+            self.assertIn("bytes=4-", urlopen.call_args.args[0].get_header("Range"))
+            self.assertEqual(result["size_bytes"], 10)
+
+    @patch("brasil_eleitoral.ingestion.downloader.urlopen")
+    def test_manifest_records_success_and_missing_url(self, urlopen):
+        payload = b"ok"
+        urlopen.return_value = FakeResponse(payload, headers={"Content-Length": "2"})
+        with tempfile.TemporaryDirectory() as tmp:
+            result = download_resources([
+                {"id": "r1", "name": "dataset.csv", "url": "https://example.test/d.csv"},
+                {"id": "r2", "name": "broken.csv"},
+            ], Path(tmp))
+            self.assertEqual(result["resource_count"], 1)
+            self.assertEqual(result["failure_count"], 1)
+            manifest = json.loads((Path(tmp) / "manifest.json").read_text())
+            self.assertEqual(manifest["resources"][0]["resource_id"], "r1")
+            self.assertEqual(manifest["failures"][0]["resource_id"], "r2")
+
+    def test_rejects_non_http_urls_and_sanitizes_names(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError):
+                download_resource("file:///etc/passwd", Path(tmp) / "x")
+            result = download_resources([{"id": "x", "name": "../../evil.csv"}], Path(tmp))
+            self.assertEqual(result["failure_count"], 1)
+
+
+if __name__ == "__main__":
+    unittest.main()
