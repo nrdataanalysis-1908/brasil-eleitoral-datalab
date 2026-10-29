@@ -1,135 +1,145 @@
 # Brasil Eleitoral DataLab
 
-**Engenharia de Dados, integração e auditoria reproduzível de dados eleitorais brasileiros.**
+<p align="center">
+  <strong>Engenharia de dados, catálogo público e análise reproduzível do ecossistema eleitoral brasileiro.</strong>
+</p>
 
-O Brasil Eleitoral DataLab é um projeto de engenharia de dados voltado à coleta, padronização, validação e análise de dados eleitorais públicos do Brasil. A proposta é construir uma base técnica rastreável, reproduzível e orientada por evidências, utilizando fontes oficiais e documentando as transformações aplicadas aos dados.
+<p align="center">
+  <a href="https://dadosabertos.tse.jus.br/">Dados Abertos do TSE</a> ·
+  <a href="docs/architecture/overview.md">Arquitetura</a> ·
+  <a href="catalog/sources/tse.yml">Catálogo de fontes</a> ·
+  <a href="CONTRIBUTING.md">Contribuição</a>
+</p>
 
-> **Status do projeto:** estrutura inicial. Este repositório ainda não contém pipelines de ingestão, modelos de dados, análises ou testes automatizados. Os componentes descritos abaixo representam o escopo planejado, não funcionalidades já implementadas.
+O Brasil Eleitoral DataLab é uma iniciativa independente para descobrir, documentar, integrar, validar e analisar dados públicos relacionados ao processo eleitoral brasileiro. O objetivo é oferecer um ponto de entrada técnico para pesquisadores, jornalistas, estudantes, desenvolvedores e cidadãos interessados em explorar dados eleitorais com rastreabilidade e reprodutibilidade.
 
-## Objetivos
+O projeto não se limita à auditoria de urnas eletrônicas. Seu escopo abrange resultados eleitorais, candidaturas, eleitorado, partidos, financiamento de campanhas, pesquisas eleitorais, boletins de urna, arquivos técnicos de totalização, geografia eleitoral e documentação institucional.
 
-- Integrar conjuntos de dados eleitorais publicados por fontes oficiais.
-- Preservar a origem, a versão e a data de referência de cada conjunto de dados.
-- Padronizar schemas, tipos, códigos geográficos e identificadores eleitorais.
-- Aplicar validações de qualidade, consistência e integridade.
-- Disponibilizar dados tratados para consultas analíticas reproduzíveis.
-- Documentar critérios, limitações e decisões metodológicas.
+> **Estado atual:** fundação documental e catálogo inicial em construção. Os domínios listados representam o escopo de descoberta; não significam que os dados já tenham sido baixados, tratados ou integrados. A situação de cada conjunto será registrada individualmente no catálogo.
 
-## Fontes de dados
+## Escopo de dados
 
-A fonte primária prevista é o portal de Dados Abertos do Tribunal Superior Eleitoral (TSE):
+| Domínio | Exemplos de conteúdo | Fonte prioritária |
+|---|---|---|
+| Resultados eleitorais | Votação por cargo, candidato, partido, município, zona e seção | TSE |
+| Candidaturas | Perfil, situação, partido, federação, bens e propostas | TSE |
+| Eleitorado | Perfil agregado, comparecimento, abstenção e locais de votação | TSE |
+| Urnas e totalização | Boletins de urna, RDV, logs e arquivos de totalização | TSE |
+| Financiamento | Receitas, despesas, doadores, fornecedores e prestação de contas | TSE |
+| Pesquisas | Registros, institutos, contratantes e resultados publicados | TSE |
+| Partidos | Órgãos partidários e informações partidárias disponíveis | TSE |
+| Geografia eleitoral | Municípios, zonas, seções e códigos de referência | TSE / IBGE |
+| Contexto institucional | Legislação, normas, fiscalização e dados públicos correlatos | Órgãos oficiais |
+
+A disponibilidade, a granularidade, o histórico e a periodicidade variam por conjunto. Cada integração deverá ser precedida pela leitura dos metadados e do dicionário oficial.
+
+## Fontes e catálogo
+
+A fonte primária é o [Portal de Dados Abertos do TSE](https://dadosabertos.tse.jus.br/), que utiliza CKAN e disponibiliza catálogo de conjuntos e recursos. O portal substituiu o antigo Repositório de Dados Eleitorais.
 
 - [Portal de Dados Abertos do TSE](https://dadosabertos.tse.jus.br/)
-- [Tribunal Superior Eleitoral](https://www.tse.jus.br/)
+- [Catálogo de conjuntos](https://dadosabertos.tse.jus.br/dataset/)
+- [API CKAN — busca de conjuntos](https://dadosabertos.tse.jus.br/api/3/action/package_search)
+- [TSE — Estatísticas eleitorais](https://www.tse.jus.br/eleicoes/estatisticas)
 
-A seleção de datasets será feita a partir do catálogo oficial. Cada integração deverá registrar, no mínimo, o recurso de origem, URL ou identificador no catálogo, data de extração, período eleitoral, formato, versão disponível e checksum do arquivo, quando aplicável.
+Fontes complementares, como IBGE e Dados.gov.br, serão adicionadas quando houver relação metodológica clara com os dados eleitorais.
 
-A cobertura efetiva dependerá da disponibilidade, do layout e da documentação de cada conjunto de dados.
+O catálogo local fica em `catalog/`. Cada registro deverá informar identificador, órgão responsável, URL oficial, formatos, cobertura temporal e geográfica, granularidade, licença declarada pela fonte, frequência de atualização, data da verificação e situação da integração.
 
-## Arquitetura de dados proposta
+## Arquitetura
 
-O desenho lógico prevê três camadas:
+A solução será híbrida:
+
+- **Web:** JavaScript / TypeScript com Next.js para navegação, catálogo e experiência pública.
+- **API:** Node.js / TypeScript para expor metadados e serviços da aplicação.
+- **Dados e pipelines:** Python para descoberta, download, extração, validação e transformação.
+- **Exploração analítica:** Streamlit para aplicações de análise interativa.
+- **Consulta e armazenamento analítico:** DuckDB e Parquet; PostgreSQL quando houver necessidade transacional ou de serviço compartilhado.
+
+### Camadas de dados
 
 | Camada | Responsabilidade |
 |---|---|
-| **Bronze** | Preservar os arquivos originais, metadados de extração e evidências de integridade. |
-| **Silver** | Normalizar schemas, tipos, códigos, categorias e regras de qualidade, mantendo rastreabilidade até a origem. |
-| **Gold** | Publicar tabelas e agregações analíticas documentadas, prontas para consultas e visualizações. |
+| Landing / Bronze | Preservar arquivos originais, metadados, checksums e evidências de extração |
+| Silver | Padronizar schemas, tipos, códigos e regras de qualidade sem perder proveniência |
+| Gold | Publicar tabelas analíticas e indicadores com granularidade e metodologia explícitas |
 
-### Fluxo lógico previsto
+A arquitetura detalhada e os limites entre componentes estão em [docs/architecture/overview.md](docs/architecture/overview.md).
 
-1. Descoberta de datasets no catálogo oficial.
-2. Extração dos arquivos e metadados.
-3. Verificação de integridade e registro de proveniência.
-4. Ingestão da fonte na camada Bronze.
-5. Normalização e validação na camada Silver.
-6. Construção de tabelas analíticas na camada Gold.
-7. Testes, documentação e publicação dos resultados.
+## Princípios de engenharia e auditoria
 
-## Stack tecnológica em avaliação
+1. **Proveniência:** toda tabela derivada deve apontar para a fonte, recurso, versão e execução que a originaram.
+2. **Integridade:** registrar tamanho, checksum e resultado das verificações aplicáveis aos arquivos.
+3. **Idempotência:** reprocessar a mesma versão não deve gerar duplicações silenciosas.
+4. **Contratos de dados:** documentar schema, tipos, chaves, granularidade e semântica.
+5. **Qualidade:** testar obrigatoriedade, domínio, duplicidade, integridade referencial e reconciliação de contagens.
+6. **Reprodutibilidade:** registrar parâmetros, versões de código e datas de extração.
+7. **Segurança:** tratar arquivos externos como não confiáveis; limitar extração de arquivos compactados e não versionar dados pessoais ou credenciais.
+8. **Neutralidade analítica:** separar dado observado, hipótese e interpretação; não apresentar correlação como causalidade.
 
-A seleção final será feita conforme os formatos e volumes reais das fontes:
+Dados eleitorais agregados não autorizam inferências sobre escolhas ou comportamentos individuais. A granularidade e as limitações de cada fonte devem acompanhar qualquer análise publicada.
 
-- **Python:** ingestão, transformação, validação e automação.
-- **Pandas / Polars:** processamento tabular, conforme o perfil de cada dataset.
-- **Parquet:** armazenamento colunar para dados tratados.
-- **DuckDB:** consultas analíticas locais e reprodutíveis.
-- **SQL:** modelagem, transformação e validação.
-- **GitHub Actions:** automação de testes e verificações de qualidade.
-
-Nenhuma dessas integrações deve ser considerada implementada até existir código versionado e teste correspondente no repositório.
-
-## Qualidade, auditoria e reprodutibilidade
-
-As pipelines deverão contemplar:
-
-- Validação de schema e tipos de dados.
-- Verificação de campos obrigatórios, valores nulos e duplicidades.
-- Integridade referencial entre tabelas relacionadas.
-- Validação de domínios e códigos oficiais.
-- Reconciliação de contagens entre origem e destino.
-- Registro de logs, erros, duração e volume processado.
-- Versionamento de parâmetros e regras de transformação.
-- Testes automatizados para regras críticas.
-
-As execuções deverão ser idempotentes sempre que possível: reprocessar a mesma fonte e versão não deverá gerar duplicação silenciosa nem alterar resultados sem justificativa documentada.
-
-## Princípios metodológicos
-
-Dados eleitorais exigem interpretação cuidadosa. O projeto adotará os seguintes princípios:
-
-1. **Fonte verificável:** priorizar dados oficiais e registrar a referência utilizada.
-2. **Separação entre fato e interpretação:** resultados descritivos não serão apresentados como explicações causais.
-3. **Granularidade explícita:** toda métrica deverá informar período, unidade geográfica, cargo e universo considerado.
-4. **Junções controladas:** relacionamentos deverão utilizar chaves oficiais e regras documentadas.
-5. **Limites de inferência:** dados agregados por seção, município ou zona não permitem concluir automaticamente o comportamento individual de eleitores.
-6. **Reprodutibilidade:** análises deverão informar fonte, filtros, parâmetros e transformações.
-
-## Estrutura planejada
-
-A estrutura abaixo é uma referência de organização futura; diretórios e módulos serão adicionados conforme cada etapa for implementada.
+## Estrutura do repositório
 
 ```text
 brasil-eleitoral-datalab/
-├── data/
-│   ├── bronze/
-│   ├── silver/
-│   └── gold/
-├── docs/
-│   ├── architecture.md
-│   ├── data-dictionary.md
-│   └── methodology.md
-├── notebooks/
+├── apps/
+│   ├── web/                  # Next.js (JavaScript / TypeScript)
+│   └── analytics/            # Streamlit (Python)
+├── services/
+│   └── api/                  # API Node.js / TypeScript
 ├── src/
 │   └── brasil_eleitoral/
+│       ├── catalog/
 │       ├── ingestion/
 │       ├── validation/
 │       ├── transformation/
-│       └── analytics/
+│       └── storage/
+├── catalog/
+│   ├── sources/
+│   └── datasets/
+├── docs/
+│   ├── architecture/
+│   ├── datasets/
+│   ├── methodology/
+│   └── tutorials/
+├── examples/
+├── notebooks/
+├── scripts/
 ├── tests/
-├── .github/
-│   └── workflows/
-├── .gitignore
-├── pyproject.toml
-└── README.md
+└── .github/workflows/
 ```
 
-Arquivos eleitorais brutos, bases derivadas volumosas, credenciais e dados pessoais não devem ser versionados no Git. O repositório deverá manter apenas código, documentação, metadados e amostras pequenas cuja publicação seja apropriada.
+A estrutura será materializada incrementalmente. Diretórios ainda sem implementação não devem ser interpretados como componentes operacionais.
 
-## Roadmap
+## Situação do desenvolvimento
 
-- [ ] Mapear o catálogo do TSE e selecionar o primeiro conjunto de dados.
-- [ ] Documentar layout, granularidade, chaves e regras do dataset escolhido.
-- [ ] Implementar ingestão reproduzível com metadados e integridade.
-- [ ] Implementar validações e testes automatizados.
-- [ ] Estruturar as camadas Bronze, Silver e Gold.
-- [ ] Disponibilizar consultas analíticas e exemplos reproduzíveis.
-- [ ] Automatizar verificações com CI.
+- [x] Definição do escopo multidomínio.
+- [x] Definição da arquitetura híbrida.
+- [x] Padrão inicial de metadados e catálogo de fontes.
+- [ ] Descoberta automatizada dos conjuntos CKAN.
+- [ ] Primeiro pipeline de download com checksum e manifesto.
+- [ ] Extrator ZIP seguro e testes automatizados.
+- [ ] Contratos de dados e validações.
+- [ ] Primeira integração de resultados eleitorais.
+- [ ] API e interface web.
+- [ ] Aplicação Streamlit de exploração.
+- [ ] CI, documentação de uso e exemplos reproduzíveis.
 
-## Como contribuir
+## Como começar
 
-Contribuições devem preservar a rastreabilidade das fontes, incluir documentação das regras aplicadas e adicionar testes para transformações ou validações relevantes. Alterações metodológicas precisam explicitar seus impactos nos resultados.
+Nesta fase, consulte a documentação de arquitetura e os registros em `catalog/`. Os primeiros pipelines serão adicionados depois que os metadados e formatos dos recursos forem verificados diretamente na fonte.
+
+Não publique arquivos brutos volumosos no Git. Prefira manifests, metadados, amostras pequenas e dados derivados cuja redistribuição seja permitida pela fonte.
+
+## Referências
+
+- [Portal de Dados Abertos do TSE](https://dadosabertos.tse.jus.br/)
+- [Tribunal Superior Eleitoral](https://www.tse.jus.br/)
+- [IBGE](https://www.ibge.gov.br/)
+- [Portal Brasileiro de Dados Abertos](https://dados.gov.br/)
+- [DataUrnas-BR — referência de organização e documentação](https://github.com/alissonlinneker/dataUrnas-br)
 
 ## Licença
 
-A licença do projeto ainda não foi definida. Até que uma licença seja adicionada ao repositório, não se deve presumir autorização para reutilização, redistribuição ou uso comercial do conteúdo.
+A licença do repositório ainda será definida. Até que um arquivo de licença seja incluído, não presuma autorização para reutilização ou redistribuição do código deste projeto. As condições de uso dos dados devem ser verificadas individualmente nos metadados de cada fonte.
