@@ -131,9 +131,9 @@ Legenda: [x] concluído e publicado; [ ] ainda não implementado ou não validad
 - [x] Cliente CKAN com paginação, descoberta e coleta automatizada de metadados (implementado; consulta real ainda depende de execução no ambiente).
 - [x] Normalização de metadados e exportação local em JSON, com manifesto SHA-256 e checkpoint de retomada.
 - [x] Pipeline de download com retomada por HTTP Range/ETag, SHA-256 e manifesto atômico (testes simulados; execução real pendente).
-- [ ] Extrator ZIP seguro com limites, validação de integridade e testes.
-- [ ] Contratos de dados e validações automatizadas.
-- [ ] Camadas Bronze, Silver e Gold implementadas.
+- [x] Extrator ZIP seguro com limites, validação de integridade e testes (CI validada).
+- [x] Contratos de dados versionados e validações automatizadas (CI validada).
+- [x] Pipeline inicial Bronze/Silver/Gold com hashes, metadados, normalização CSV e agregação por granularidade explícita (fixtures locais; Parquet/DuckDB pendentes).
 - [ ] Primeira integração de resultados eleitorais validada de ponta a ponta.
 
 ### Aplicações e operação
@@ -142,7 +142,7 @@ Legenda: [x] concluído e publicado; [ ] ainda não implementado ou não validad
 - [ ] Aplicação Streamlit de exploração.
 - [x] Testes automatizados do cliente e do catálogo CKAN (respostas simuladas).
 - [x] Workflow de CI para executar a suíte de testes.
-- [ ] Documentação de instalação, execução e exemplos reproduzíveis.
+- [x] Documentação de instalação, execução e exemplos reproduzíveis para descoberta, downloads, extração, contratos e medallion.
 - [ ] Monitoramento, logs estruturados e tratamento operacional de falhas.
 
 Os itens marcados como concluídos correspondem somente ao que já está versionado no repositório. Itens planejados permanecem desmarcados até que exista implementação publicada e validação correspondente. Esta lista será atualizada a cada entrega.
@@ -157,7 +157,7 @@ python scripts/discover_tse_catalog.py
 python scripts/download_tse_resources.py
 ```
 
-O comando consulta o catálogo público do TSE, percorre as páginas da API e grava um JSON por conjunto em `catalog/tse/datasets/`, além de `manifest.json` e checkpoint. Os arquivos gerados são locais e estão excluídos do Git para evitar commits de snapshots extensos e variáveis. Consulte [docs/ckan-discovery.md](docs/ckan-discovery.md) e [docs/resource-downloads.md](docs/resource-downloads.md) para opções, formato e limitações do catálogo e dos downloads.
+O comando consulta o catálogo público do TSE, percorre as páginas da API e grava um JSON por conjunto em `catalog/tse/datasets/`, além de `manifest.json` e checkpoint. Os arquivos gerados são locais e estão excluídos do Git para evitar commits de snapshots extensos e variáveis. Consulte [docs/ckan-discovery.md](docs/ckan-discovery.md), [docs/resource-downloads.md](docs/resource-downloads.md), [docs/safe-extraction.md](docs/safe-extraction.md), [docs/data-contracts.md](docs/data-contracts.md) e [docs/medallion-pipeline.md](docs/medallion-pipeline.md) para opções, formatos e limitações dos componentes.
 
 A descoberta CKAN e o downloader possuem testes automatizados com respostas simuladas e passam no workflow de CI. A disponibilidade real, o total atual de conjuntos e a conclusão de uma coleta integral de metadados/recursos ainda precisam ser confirmados executando os comandos contra o portal em ambiente com acesso à internet.
 
