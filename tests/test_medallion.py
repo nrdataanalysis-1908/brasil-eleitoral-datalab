@@ -18,6 +18,8 @@ class MedallionTests(unittest.TestCase):
                                   execution_id="run-1")
             second = bronze_ingest(source, root / "lake", source_id="tse", dataset="results",
                                    execution_id="run-2")
+            self.assertFalse(first["already_present"])
+            self.assertTrue(second["already_present"])
             self.assertEqual(first["sha256"], second["sha256"])
             self.assertEqual(Path(first["path"]).read_bytes(), source.read_bytes())
             self.assertTrue(Path(first["metadata_path"]).is_file())
@@ -51,6 +53,7 @@ class MedallionTests(unittest.TestCase):
             with output.open(encoding="utf-8", newline="") as stream:
                 rows = list(csv.DictReader(stream))
             self.assertEqual(rows[0]["total_votes"], "25")
+            self.assertEqual(list(rows[0]), ["state", "office", "total_votes"])
 
     def test_gold_rejects_null_dimensions(self):
         with tempfile.TemporaryDirectory() as tmp:
