@@ -1,0 +1,194 @@
+"""Reproducible, stdlib-only Bronze/Silver/Gold transformations."""
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import os
+import re
+import shutil
+import tempfile
+from collections import defaultdict
+from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
+from pathlib import Path
+from typing import Iterable
+
+
+class MedallionError(ValueError):
+    """Raised when a medallion operation cannot be completed safely."""
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _atomic_json(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(payload, stream, ensure_ascii=False, indent=2, sort_keys=True)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    except Exception:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
+
+
+def bronze_ingest(source: Path, root: Path, *, source_id: str, dataset: str,
+                  execution_id: str | None = None) -> dict:
+    """Copy an immutable source file into Bronze, keyed by its content hash."""
+    source, root = Path(source), Path(root)
+    if not source.is_file():
+        raise FileNotFoundError(source)
+    for value, label in ((source_id, "source_id"), (dataset, "dataset")):
+        if not value or not re.fullmatch(r"[A-Za-z0-9_.-]+", value):
+            raise MedallionError(f"Invalid {label}")
+    digest = sha256_file(source)
+    execution_id = execution_id or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", execution_id):
+        raise MedallionError("Invalid execution_id")
+    destination_dir = root / "bronze" / source_id / dataset / digest[:2]
+    destination_dir.mkdir(parents=True, exist_ok=True)
+    destination = destination_dir / f"{digest}{source.suffix.lower()}"
+    metadata_path = destination.with_suffix(destination.suffix + ".metadata.json")
+    if destination.exists() and sha256_file(destination) != digest:
+        raise MedallionError("Existing Bronze object does not match its content hash")
+    if not destination.exists():
+        fd, temporary = tempfile.mkstemp(prefix=".bronze.", dir=destination_dir)
+        os.close(fd)
+        try:
+            shutil.copyfile(source, temporary)
+            if sha256_file(Path(temporary)) != digest:
+                raise MedallionError("Source changed while being copied")
+            os.replace(temporary, destination)
+        except Exception:
+            try:
+                os.unlink(temporary)
+            except FileNotFoundError:
+                pass
+            raise
+    metadata = {
+        "layer": "bronze", "source_id": source_id, "dataset": dataset,
+        "source_filename": source.name, "stored_filename": destination.name,
+        "sha256": digest, "size_bytes": destination.stat().st_size,
+        "execution_id": execution_id, "ingested_at": datetime.now(timezone.utc).isoformat(),
+        "immutable": True,
+    }
+    if not metadata_path.exists():
+        _atomic_json(metadata_path, metadata)
+    return {"path": str(destination), "metadata_path": str(metadata_path),
+            "sha256": digest, "size_bytes": destination.stat().st_size,
+            "already_present": metadata_path.exists() and destination.exists()}
+
+
+def _normalize_header(value: str) -> str:
+    value = value.strip().lower()
+    value = re.sub(r"[^a-z0-9]+", "_", value, flags=re.ASCII).strip("_")
+    if not value:
+        raise MedallionError("CSV contains an empty/invalid column name")
+    return value
+
+
+def silver_normalize_csv(source: Path, destination: Path, *,
+                         encoding: str = "utf-8-sig", delimiter: str = ",") -> dict:
+    """Normalize CSV headers and whitespace, retaining values as strings."""
+    source, destination = Path(source), Path(destination)
+    if not source.is_file():
+        raise FileNotFoundError(source)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=".silver.", suffix=".csv", dir=destination.parent)
+    os.close(fd)
+    rows = 0
+    try:
+        with source.open("r", encoding=encoding, newline="") as incoming, open(
+            temporary, "w", encoding="utf-8", newline=""
+        ) as outgoing:
+            reader = csv.DictReader(incoming, delimiter=delimiter)
+            if not reader.fieldnames:
+                raise MedallionError("CSV has no header")
+            headers = [_normalize_header(name or "") for name in reader.fieldnames]
+            if len(headers) != len(set(headers)):
+                raise MedallionError("Header normalization produced duplicate columns")
+            writer = csv.DictWriter(outgoing, fieldnames=headers, extrasaction="raise")
+            writer.writeheader()
+            for row in reader:
+                if None in row:
+                    raise MedallionError(f"Row {rows + 2} has more columns than the header")
+                writer.writerow({headers[index]: (row.get(reader.fieldnames[index]) or "").strip()
+                                 for index in range(len(headers))})
+                rows += 1
+            outgoing.flush()
+            os.fsync(outgoing.fileno())
+        os.replace(temporary, destination)
+    except Exception:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
+    metadata = {"layer": "silver", "rows": rows, "columns": headers,
+                "source_sha256": sha256_file(source), "output_sha256": sha256_file(destination)}
+    _atomic_json(destination.with_suffix(destination.suffix + ".metadata.json"), metadata)
+    return {"path": str(destination), **metadata}
+
+
+def gold_aggregate_results(source: Path, destination: Path, *,
+                           dimensions: Iterable[str], metric: str = "votes",
+                           encoding: str = "utf-8-sig") -> dict:
+    """Aggregate normalized result rows by explicit dimensions and sum a metric."""
+    source, destination = Path(source), Path(destination)
+    dimensions = tuple(dimensions)
+    if not dimensions or len(set(dimensions)) != len(dimensions):
+        raise MedallionError("Provide unique, non-empty aggregation dimensions")
+    if metric in dimensions:
+        raise MedallionError("Metric cannot also be an aggregation dimension")
+    totals: dict[tuple[str, ...], Decimal] = defaultdict(Decimal)
+    with source.open("r", encoding=encoding, newline="") as stream:
+        reader = csv.DictReader(stream)
+        if not reader.fieldnames or any(name not in reader.fieldnames for name in (*dimensions, metric)):
+            raise MedallionError("Source CSV is missing an aggregation column")
+        for row_number, row in enumerate(reader, start=2):
+            key = tuple((row.get(name) or "").strip() for name in dimensions)
+            if any(not value for value in key):
+                raise MedallionError(f"Null aggregation dimension at row {row_number}")
+            try:
+                value = Decimal((row.get(metric) or "").strip())
+            except InvalidOperation as exc:
+                raise MedallionError(f"Invalid {metric} at row {row_number}") from exc
+            if not value.is_finite() or value < 0:
+                raise MedallionError(f"Invalid non-negative metric at row {row_number}")
+            totals[key] += value
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=".gold.", suffix=".csv", dir=destination.parent)
+    os.close(fd)
+    try:
+        with open(temporary, "w", encoding="utf-8", newline="") as stream:
+            writer = csv.writer(stream)
+            writer.writerow([*dimensions, f"total_{metric}", "source_rows"])
+            for key in sorted(totals):
+                writer.writerow([*key, format(totals[key], "f"), ""])
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, destination)
+    except Exception:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
+    metadata = {"layer": "gold", "dimensions": list(dimensions), "metric": metric,
+                "groups": len(totals), "source_sha256": sha256_file(source),
+                "output_sha256": sha256_file(destination)}
+    _atomic_json(destination.with_suffix(destination.suffix + ".metadata.json"), metadata)
+    return {"path": str(destination), **metadata}
