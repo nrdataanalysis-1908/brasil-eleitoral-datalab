@@ -130,7 +130,7 @@ Legenda: [x] concluído e publicado; [ ] ainda não implementado ou não validad
 ### Engenharia de dados
 - [x] Cliente CKAN com paginação, descoberta e coleta automatizada de metadados (implementado; consulta real ainda depende de execução no ambiente).
 - [x] Normalização de metadados e exportação local em JSON, com manifesto SHA-256 e checkpoint de retomada.
-- [ ] Pipeline de download com retomada, checksum e manifesto.
+- [x] Pipeline de download com retomada por HTTP Range/ETag, SHA-256 e manifesto atômico (testes simulados; execução real pendente).
 - [ ] Extrator ZIP seguro com limites, validação de integridade e testes.
 - [ ] Contratos de dados e validações automatizadas.
 - [ ] Camadas Bronze, Silver e Gold implementadas.
@@ -154,11 +154,12 @@ Requer Python 3.10 ou superior. Instale o projeto e execute o coletor:
 ```bash
 python -m pip install -e ".[dev]"
 python scripts/discover_tse_catalog.py
+python scripts/download_tse_resources.py
 ```
 
-O comando consulta o catálogo público do TSE, percorre as páginas da API e grava um JSON por conjunto em `catalog/tse/datasets/`, além de `manifest.json` e checkpoint. Os arquivos gerados são locais e estão excluídos do Git para evitar commits de snapshots extensos e variáveis. Consulte [docs/ckan-discovery.md](docs/ckan-discovery.md) para opções, formato e limitações.
+O comando consulta o catálogo público do TSE, percorre as páginas da API e grava um JSON por conjunto em `catalog/tse/datasets/`, além de `manifest.json` e checkpoint. Os arquivos gerados são locais e estão excluídos do Git para evitar commits de snapshots extensos e variáveis. Consulte [docs/ckan-discovery.md](docs/ckan-discovery.md) e [docs/resource-downloads.md](docs/resource-downloads.md) para opções, formato e limitações do catálogo e dos downloads.
 
-A implementação foi testada com respostas simuladas. A disponibilidade real, o total atual de conjuntos e a conclusão de uma coleta integral ainda precisam ser confirmados executando o comando contra o portal em ambiente com acesso à internet.
+A descoberta CKAN e o downloader possuem testes automatizados com respostas simuladas e passam no workflow de CI. A disponibilidade real, o total atual de conjuntos e a conclusão de uma coleta integral de metadados/recursos ainda precisam ser confirmados executando os comandos contra o portal em ambiente com acesso à internet.
 
 Não publique arquivos brutos volumosos no Git. Prefira manifests, metadados, amostras pequenas e dados derivados cuja redistribuição seja permitida pela fonte.
 
