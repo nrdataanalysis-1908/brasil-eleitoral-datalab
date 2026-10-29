@@ -145,7 +145,7 @@ Legenda: [x] concluído e publicado; [ ] ainda não implementado ou não validad
 - [x] Documentação de instalação, execução e exemplos reproduzíveis para descoberta, downloads, extração, contratos e medallion.
 - [x] Logs JSON estruturados, códigos de saída e tratamento de falhas no pipeline local; [ ] monitoramento gerenciado, alertas e observabilidade de produção.
 
-Os itens marcados como concluídos correspondem somente ao que já está versionado no repositório. Itens planejados permanecem desmarcados até que exista implementação publicada e validação correspondente. Esta lista será atualizada a cada entrega.
+A stack local pode ser iniciada com `docker compose up --build`; consulte [docs/development-stack.md](docs/development-stack.md). Os itens marcados como concluídos correspondem somente ao que já está versionado no repositório. Itens planejados permanecem desmarcados até que exista implementação publicada e validação correspondente. Esta lista será atualizada a cada entrega.
 
 ## Como executar a descoberta CKAN
 
@@ -158,7 +158,7 @@ python scripts/download_tse_resources.py
 python scripts/process_election_results.py --input examples/election-results-normalized.csv --contract contracts/tse/election-results.v1.json --output data --dimensions election_year state_code office
 ```
 
-O comando consulta o catálogo público do TSE, percorre as páginas da API e grava um JSON por conjunto em `catalog/tse/datasets/`, além de `manifest.json` e checkpoint. Os arquivos gerados são locais e estão excluídos do Git para evitar commits de snapshots extensos e variáveis. Consulte [docs/ckan-discovery.md](docs/ckan-discovery.md), [docs/resource-downloads.md](docs/resource-downloads.md), [docs/safe-extraction.md](docs/safe-extraction.md), [docs/data-contracts.md](docs/data-contracts.md), [docs/medallion-pipeline.md](docs/medallion-pipeline.md), [docs/api.md](docs/api.md) e [docs/streamlit.md](docs/streamlit.md), [docs/operations.md](docs/operations.md) e [docs/api.md](docs/api.md) para opções, formatos e limitações dos componentes.
+O comando consulta o catálogo público do TSE, percorre as páginas da API e grava um JSON por conjunto em `catalog/tse/datasets/`, além de `manifest.json` e checkpoint. Os arquivos gerados são locais e estão excluídos do Git para evitar commits de snapshots extensos e variáveis. Consulte [docs/ckan-discovery.md](docs/ckan-discovery.md), [docs/resource-downloads.md](docs/resource-downloads.md), [docs/safe-extraction.md](docs/safe-extraction.md), [docs/data-contracts.md](docs/data-contracts.md), [docs/medallion-pipeline.md](docs/medallion-pipeline.md), [docs/api.md](docs/api.md) e [docs/streamlit.md](docs/streamlit.md), [docs/operations.md](docs/operations.md), [docs/development-stack.md](docs/development-stack.md) e [docs/api.md](docs/api.md) para opções, formatos e limitações dos componentes.
 
 A descoberta CKAN e o downloader possuem testes automatizados com respostas simuladas e passam no workflow de CI. A disponibilidade real, o total atual de conjuntos e a conclusão de uma coleta integral de metadados/recursos ainda precisam ser confirmados executando os comandos contra o portal em ambiente com acesso à internet.
 
