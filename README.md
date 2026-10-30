@@ -7,7 +7,6 @@
   <a href="https://img.shields.io/badge/Node.js-20%2B-339933"><img src="https://img.shields.io/badge/Node.js-20%2B-168bd0?logo=nodedotjs&logoColor=white" alt="Node.js"></a>
   <a href="https://img.shields.io/badge/Next.js-Web-000000"><img src="https://img.shields.io/badge/Next.js-Web-000000?logo=nextdotjs" alt="Next.js"></a>
   <a href="https://img.shields.io/badge/HTML-Reports-168bd0"><img src="https://img.shields.io/badge/HTML-Reports-168bd0?logo=html5&logoColor=white" alt="HTML Reports"></a>
-  <a href="https://img.shields.io/badge/Plotly-Charts-3F4F75"><img src="https://img.shields.io/badge/Plotly-Charts-28516a?logo=plotly" alt="Plotly"></a>
   <a href="https://img.shields.io/badge/Source-TSE-168bd0"><img src="https://img.shields.io/badge/Source-TSE-0B6E99" alt="TSE"></a>
 </p>
 
