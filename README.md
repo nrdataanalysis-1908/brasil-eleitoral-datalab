@@ -4,11 +4,11 @@
 
 <p align="center">
   <a href="https://img.shields.io/badge/Python-3.10%2B-3776AB"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python"></a>
-  <a href="https://img.shields.io/badge/Node.js-20%2B-339933"><img src="https://img.shields.io/badge/Node.js-20%2B-339933?logo=nodedotjs&logoColor=white" alt="Node.js"></a>
+  <a href="https://img.shields.io/badge/Node.js-20%2B-339933"><img src="https://img.shields.io/badge/Node.js-20%2B-168bd0?logo=nodedotjs&logoColor=white" alt="Node.js"></a>
   <a href="https://img.shields.io/badge/Next.js-Web-000000"><img src="https://img.shields.io/badge/Next.js-Web-000000?logo=nextdotjs" alt="Next.js"></a>
-  <a href="https://img.shields.io/badge/Streamlit-Analytics-FF4B4B"><img src="https://img.shields.io/badge/Streamlit-Analytics-FF4B4B?logo=streamlit&logoColor=white" alt="Streamlit"></a>
-  <a href="https://img.shields.io/badge/Plotly-Charts-3F4F75"><img src="https://img.shields.io/badge/Plotly-Charts-3F4F75?logo=plotly" alt="Plotly"></a>
-  <a href="https://img.shields.io/badge/Source-TSE-0B6E99"><img src="https://img.shields.io/badge/Source-TSE-0B6E99" alt="TSE"></a>
+  <a href="https://img.shields.io/badge/Streamlit-Analytics-FF4B4B"><img src="https://img.shields.io/badge/Streamlit-Analytics-168bd0?logo=streamlit&logoColor=white" alt="Streamlit"></a>
+  <a href="https://img.shields.io/badge/Plotly-Charts-3F4F75"><img src="https://img.shields.io/badge/Plotly-Charts-28516a?logo=plotly" alt="Plotly"></a>
+  <a href="https://img.shields.io/badge/Source-TSE-168bd0"><img src="https://img.shields.io/badge/Source-TSE-0B6E99" alt="TSE"></a>
 </p>
 
 # Brasil Eleitoral DataLab
