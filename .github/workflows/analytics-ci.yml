@@ -10,12 +10,18 @@ on:
       - "apps/analytics/**"
       - ".github/workflows/analytics-ci.yml"
 jobs:
-  syntax:
+  html-report:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Compile Streamlit application
-        run: python -m py_compile apps/analytics/app.py
+      - name: Compile report generator
+        run: python -m py_compile apps/analytics/generate_report.py
+      - name: Test standalone HTML report
+        run: python -m unittest discover -s apps/analytics -p "test_*.py" -v
+      - name: Generate empty-state report
+        run: python apps/analytics/generate_report.py --manifest catalog/tse/datasets/manifest.json --output /tmp/brasil-eleitoral-report/index.html
+      - name: Verify HTML artifact
+        run: python -c "from pathlib import Path; p=Path('/tmp/brasil-eleitoral-report/index.html'); assert p.is_file() and 'BRASIL ELEITORAL DATALAB' in p.read_text(encoding='utf-8')"
