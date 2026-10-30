@@ -72,17 +72,18 @@ A interface Next.js é o painel principal da plataforma e consulta os metadados 
 
 - distribuição dos recursos por formato;
 - conjuntos publicados por organização;
-- evolução temporal de criação dos conjuntos;
-- atualizações mensais do catálogo;
-- conjuntos com maior quantidade de recursos.
+- quantidade de conjuntos descobertos;
+- volume de recursos catalogados;
+- órgãos responsáveis;
+- inventário dos conjuntos e suas datas de atualização.
 
-Os filtros permitem segmentar por órgão, formato e busca textual. A tabela de resultados pode ser exportada em CSV.
+O relatório é uma fotografia estática e reproduzível dos metadados presentes no manifesto local. A interface Next.js oferece a exploração interativa do catálogo.
 
 <p align="center">
   <img src="docs/assets/analytics-overview.svg" alt="Esquema visual do relatório HTML com indicadores e gráficos de metadados" width="100%">
 </p>
 
-> A imagem acima documenta os tipos de visualização do painel; é um esquema ilustrativo, não uma captura da aplicação nem uma amostra de dados. Os gráficos em execução usam os metadados efetivamente presentes no manifesto local. Nesta etapa, eles não representam votos, candidatos, comparecimento ou abstenção.
+> A imagem acima é um esquema ilustrativo, não uma captura da aplicação nem uma amostra de dados. Os relatórios usam somente metadados efetivamente presentes no manifesto local. Nesta etapa, não representam votos, candidatos, comparecimento ou abstenção.
 
 ### Gerar relatório HTML
 
@@ -91,7 +92,7 @@ python scripts/discover_tse_catalog.py
 python apps/analytics/generate_report.py
 ```
 
-O arquivo será gerado em `reports/catalog/index.html` e pode ser aberto diretamente no navegador. A descoberta exige acesso à internet. Sem o manifesto local, o gerador produz um estado vazio explícito, sem números fictícios. O serviço Docker disponibiliza o relatório em `http://localhost:8501`.
+O arquivo será gerado em `reports/catalog/index.html` e pode ser aberto diretamente no navegador. A descoberta exige acesso à internet. Sem o manifesto local, o gerador produz um estado vazio explícito, sem números fictícios. O serviço Docker disponibiliza o relatório em `http://localhost:8501/catalog/index.html`.
 
 ## Arquitetura
 
@@ -215,7 +216,7 @@ python apps/analytics/generate_report.py
 Start-Process .\reports\catalog\index.html
 ```
 
-O relatório é autônomo, utiliza somente a biblioteca padrão do Python e pode ser impresso ou salvo em PDF pelo navegador.
+O relatório é autônomo, utiliza somente a biblioteca padrão do Python e pode ser impresso ou salvo em PDF pelo navegador. O serviço Docker local também o disponibiliza em `http://localhost:8501/catalog/index.html`.
 
 ### Stack Docker — build local
 
