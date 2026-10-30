@@ -29,3 +29,19 @@ jobs:
         run: |
           python apps/analytics/generate_report.py --manifest catalog/tse/datasets/manifest.json --output /tmp/brasil-eleitoral-report/index.html
           python -c "from pathlib import Path; p=Path('/tmp/brasil-eleitoral-report/index.html'); assert p.is_file() and 'BRASIL ELEITORAL DATALAB' in p.read_text(encoding='utf-8')"
+      - name: Build Analytics Docker image
+        run: docker build -f apps/analytics/Dockerfile -t brasil-eleitoral-analytics:ci .
+      - name: Smoke test Streamlit container
+        shell: bash
+        run: |
+          docker run --detach --name brasil-eleitoral-analytics-ci -p 8501:8501 brasil-eleitoral-analytics:ci
+          cleanup() { docker logs brasil-eleitoral-analytics-ci || true; docker rm -f brasil-eleitoral-analytics-ci || true; }
+          trap cleanup EXIT
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:8501/_stcore/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Streamlit did not become healthy in time."
+          exit 1
