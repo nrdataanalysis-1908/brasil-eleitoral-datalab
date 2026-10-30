@@ -76,8 +76,6 @@ A interface Next.js atende à navegação institucional e à consulta pela API. 
 - explorador de conjuntos e recursos com acesso às URLs originais;
 - exportação dos recortes em CSV e Excel.
 
-O painel Streamlit permite explorar os metadados carregados localmente. O relatório HTML autônomo permanece como opção complementar para impressão e distribuição.
-
 <p align="center">
   <img src="docs/assets/analytics-overview.svg" alt="Esquema visual do painel analítico de metadados" width="100%">
 </p>
