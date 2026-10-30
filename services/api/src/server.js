@@ -42,7 +42,7 @@ export async function handleRequest(request, response, root = repositoryRoot) {
       const datasets = await Promise.all(entries.map(async (entry) => {
         const relativePath = typeof entry.path === "string" ? entry.path : "";
         // Manifest entries must be plain JSON filenames inside the catalog directory.
-        if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.json$/.test(relativePath)) return null;
+        if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\.json$/.test(relativePath)) return null;
         try {
           const dataset = JSON.parse(await readFile(resolve(catalogDir, relativePath), "utf8"));
           return {
