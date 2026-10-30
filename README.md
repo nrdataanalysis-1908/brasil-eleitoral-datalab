@@ -6,7 +6,7 @@
   <a href="https://img.shields.io/badge/Python-3.10%2B-3776AB"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python"></a>
   <a href="https://img.shields.io/badge/Node.js-20%2B-339933"><img src="https://img.shields.io/badge/Node.js-20%2B-168bd0?logo=nodedotjs&logoColor=white" alt="Node.js"></a>
   <a href="https://img.shields.io/badge/Next.js-Web-000000"><img src="https://img.shields.io/badge/Next.js-Web-000000?logo=nextdotjs" alt="Next.js"></a>
-  <a href="https://img.shields.io/badge/HTML-Reports-168bd0"><img src="https://img.shields.io/badge/HTML-Reports-168bd0?logo=html5&logoColor=white" alt="HTML Reports"></a>
+  <a href="https://img.shields.io/badge/HTML-Reports-168bd0"><img src="https://img.shields.io/badge/HTML-Reports-168bd0?logo=html5&logoColor=white" alt="Streamlit Analytics"></a>
   <a href="https://img.shields.io/badge/Source-TSE-168bd0"><img src="https://img.shields.io/badge/Source-TSE-0B6E99" alt="TSE"></a>
 </p>
 
@@ -67,7 +67,7 @@ A plataforma diferencia explicitamente capacidades implementadas, integrações 
 
 ## Painel e relatórios
 
-A interface Next.js é o painel principal da plataforma e consulta os metadados pela API. O serviço Analytics gera relatórios HTML autônomos, responsivos e imprimíveis, sem depender de Streamlit. O relatório de catálogo apresenta:
+A interface Next.js atende à navegação institucional e à consulta pela API. O serviço Analytics utiliza Streamlit como painel analítico interativo, com gráficos Plotly, filtros globais e exportações. O relatório HTML autônomo permanece disponível como artefato complementar para impressão e distribuição. O painel apresenta:
 
 - distribuição dos recursos por formato;
 - conjuntos publicados por organização;
@@ -84,14 +84,14 @@ O relatório é uma fotografia estática e reproduzível dos metadados presentes
 
 > A imagem acima é um esquema ilustrativo, não uma captura da aplicação nem uma amostra de dados. Os relatórios usam somente metadados efetivamente presentes no manifesto local. Nesta etapa, não representam votos, candidatos, comparecimento ou abstenção.
 
-### Gerar relatório HTML
+### Executar o painel Streamlit
 
 ```powershell
 python scripts/discover_tse_catalog.py
-python apps/analytics/generate_report.py
+python -m pip install -r apps/analytics/requirements.txt\nstreamlit run apps/analytics/app.py
 ```
 
-O arquivo será gerado em `reports/catalog/index.html` e pode ser aberto diretamente no navegador. A descoberta exige acesso à internet. Sem o manifesto local, o gerador produz um estado vazio explícito, sem números fictícios. O serviço Docker disponibiliza o relatório em `http://localhost:8501/catalog/index.html`.
+A aplicação abre em `http://localhost:8501`. A descoberta exige acesso à internet e grava o manifesto em `catalog/tse/datasets/`. Sem catálogo local, o painel informa como gerar a base, sem fabricar indicadores.
 
 ## Arquitetura
 
@@ -107,7 +107,7 @@ O arquivo será gerado em `reports/catalog/index.html` e pode ser aberto diretam
 | Transformação | Python | Normalização e camadas Medallion |
 | API | Node.js | Catálogo e health checks |
 | Web | Next.js / TypeScript | Navegação e consulta |
-| Analytics | Python / HTML / CSS | Geração de relatórios autônomos de metadados |
+| Analytics | Streamlit / Plotly / Pandas | Painel interativo, filtros e exportações |
 
 A arquitetura representa o desenho lógico do sistema. Componentes marcados como planejados no roadmap não devem ser interpretados como serviços já implantados.
 
@@ -208,14 +208,14 @@ python scripts/download_tse_resources.py --help
 
 Consulte as opções e o manifesto gerado pela descoberta antes de iniciar downloads em lote.
 
-### Relatórios HTML
+### Painel analítico Streamlit
 
 ```powershell
 python apps/analytics/generate_report.py
 Start-Process .\reports\catalog\index.html
 ```
 
-O relatório é autônomo, utiliza somente a biblioteca padrão do Python e pode ser impresso ou salvo em PDF pelo navegador. O serviço Docker local também o disponibiliza em `http://localhost:8501/catalog/index.html`.
+Acesse `http://localhost:8501`. Para executar a stack integrada com Docker, use `docker compose up --build`.
 
 ### Stack Docker — build local
 
@@ -243,7 +243,7 @@ Consulte [docs/development-stack.md](docs/development-stack.md) para a composiç
 brasil-eleitoral-datalab/
 ├── apps/
 │   ├── web/                    # Next.js / TypeScript
-│   └── analytics/              # Gerador de relatórios HTML
+│   └── analytics/              # Painel Streamlit e relatório HTML complementar
 ├── services/
 │   └── api/                    # API Node.js
 ├── src/brasil_eleitoral/
@@ -272,7 +272,7 @@ brasil-eleitoral-datalab/
 | Pipeline Bronze/Silver/Gold | Implementação inicial com fixtures normalizadas |
 | API de catálogo e health checks | Implementada; 4 testes automatizados aprovados no GitHub Actions |
 | Interface Next.js | Implementação inicial |
-| Relatórios HTML autônomos | Gerador implementado; validação local pendente |
+| Painel analítico Streamlit | Implementado para metadados CKAN; execução local pendente |\n| Relatórios HTML autônomos | Gerador complementar implementado |
 | Ingestão integral de dados eleitorais reais | Pendente |
 | Indicadores eleitorais Gold | Pendente |
 | Mapas oficiais por UF | Pendente |
@@ -308,7 +308,7 @@ brasil-eleitoral-datalab/
 - [Operação e observabilidade](docs/operations.md)
 - [Stack de desenvolvimento](docs/development-stack.md)
 - [Execução das imagens publicadas no GHCR](docs/ghcr-deployment.md)
-- [Relatórios HTML](docs/html-reports.md)
+- [Painel analítico Streamlit](docs/streamlit-dashboard.md)\n- [Relatórios HTML complementares](docs/html-reports.md)
 
 ## Licença
 
