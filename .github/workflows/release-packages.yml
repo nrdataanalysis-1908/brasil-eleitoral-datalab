@@ -93,8 +93,8 @@ jobs:
             context: .
             file: services/api/Dockerfile
           - name: web
-            context: ./apps/web
-            file: Dockerfile
+            context: .
+            file: apps/web/Dockerfile
           - name: analytics
             context: .
             file: apps/analytics/Dockerfile
