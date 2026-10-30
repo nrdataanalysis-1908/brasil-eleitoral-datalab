@@ -269,7 +269,7 @@ brasil-eleitoral-datalab/
 | Extração ZIP segura | Implementado e coberto por testes |
 | Contratos e validação de dados | Implementado e coberto por testes |
 | Pipeline Bronze/Silver/Gold | Implementação inicial com fixtures normalizadas |
-| API de catálogo e health checks | Implementada; testes automatizados adicionados, aguardando CI |
+| API de catálogo e health checks | Implementada; 4 testes automatizados aprovados no GitHub Actions |
 | Interface Next.js | Implementação inicial |
 | Streamlit com gráficos Plotly | Implementado para metadados do catálogo |
 | Ingestão integral de dados eleitorais reais | Pendente |
