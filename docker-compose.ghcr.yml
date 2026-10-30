@@ -1,0 +1,35 @@
+services:
+  api:
+    image: ghcr.io/nrdataanalysis-1908/brasil-eleitoral-datalab-api:${IMAGE_TAG:-v0.1.0-alpha.2}
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./catalog:/app/catalog:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  web:
+    image: ghcr.io/nrdataanalysis-1908/brasil-eleitoral-datalab-web:${IMAGE_TAG:-v0.1.0-alpha.2}
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  analytics:
+    image: ghcr.io/nrdataanalysis-1908/brasil-eleitoral-datalab-analytics:${IMAGE_TAG:-v0.1.0-alpha.2}
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./catalog:/app/catalog:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
