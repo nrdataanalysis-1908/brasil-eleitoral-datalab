@@ -216,13 +216,25 @@ python -m pip install -r apps/analytics/requirements.txt
 streamlit run apps/analytics/app.py
 ```
 
-### Stack Docker
+### Stack Docker — build local
 
 ```bash
 docker compose up --build
 ```
 
-Consulte [docs/development-stack.md](docs/development-stack.md) para portas e serviços.
+### Executar imagens publicadas no GHCR
+
+Para iniciar API, Web e Analytics sem reconstruir as imagens:
+
+```powershell
+$env:IMAGE_TAG = "v0.1.0-alpha.2"
+docker compose -f docker-compose.ghcr.yml pull
+docker compose -f docker-compose.ghcr.yml up -d
+```
+
+Gere primeiro o catálogo local com `python scripts/discover_tse_catalog.py`. Consulte [o guia de execução das imagens GHCR](docs/ghcr-deployment.md) para autenticação, portas e solução de problemas.
+
+Consulte [docs/development-stack.md](docs/development-stack.md) para a composição de desenvolvimento com build local.
 
 ## Estrutura do repositório
 
@@ -257,7 +269,7 @@ brasil-eleitoral-datalab/
 | Extração ZIP segura | Implementado e coberto por testes |
 | Contratos e validação de dados | Implementado e coberto por testes |
 | Pipeline Bronze/Silver/Gold | Implementação inicial com fixtures normalizadas |
-| API de catálogo e health checks | Implementada; suíte API precisa de validação final |
+| API de catálogo e health checks | Implementada; testes automatizados adicionados, aguardando CI |
 | Interface Next.js | Implementação inicial |
 | Streamlit com gráficos Plotly | Implementado para metadados do catálogo |
 | Ingestão integral de dados eleitorais reais | Pendente |
@@ -294,6 +306,7 @@ brasil-eleitoral-datalab/
 - [Pipeline Medallion](docs/medallion-pipeline.md)
 - [Operação e observabilidade](docs/operations.md)
 - [Stack de desenvolvimento](docs/development-stack.md)
+- [Execução das imagens publicadas no GHCR](docs/ghcr-deployment.md)
 - [Aplicação Streamlit](docs/streamlit.md)
 
 ## Licença
