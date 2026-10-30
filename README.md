@@ -79,20 +79,19 @@ A interface Next.js é o painel principal da plataforma e consulta os metadados 
 Os filtros permitem segmentar por órgão, formato e busca textual. A tabela de resultados pode ser exportada em CSV.
 
 <p align="center">
-  <img src="docs/assets/analytics-overview.svg" alt="Esquema visual do painel Streamlit com indicadores e gráficos de metadados" width="100%">
+  <img src="docs/assets/analytics-overview.svg" alt="Esquema visual do relatório HTML com indicadores e gráficos de metadados" width="100%">
 </p>
 
 > A imagem acima documenta os tipos de visualização do painel; é um esquema ilustrativo, não uma captura da aplicação nem uma amostra de dados. Os gráficos em execução usam os metadados efetivamente presentes no manifesto local. Nesta etapa, eles não representam votos, candidatos, comparecimento ou abstenção.
 
-### Executar o painel
+### Gerar relatório HTML
 
-```bash
+```powershell
 python scripts/discover_tse_catalog.py
-python -m pip install -r apps/analytics/requirements.txt
-streamlit run apps/analytics/app.py
+python apps/analytics/generate_report.py
 ```
 
-A descoberta exige acesso à internet. Sem o manifesto local, a aplicação informa como gerar o catálogo e não substitui dados ausentes por números fictícios.
+O arquivo será gerado em `reports/catalog/index.html` e pode ser aberto diretamente no navegador. A descoberta exige acesso à internet. Sem o manifesto local, o gerador produz um estado vazio explícito, sem números fictícios. O serviço Docker disponibiliza o relatório em `http://localhost:8501`.
 
 ## Arquitetura
 
@@ -211,10 +210,12 @@ Consulte as opções e o manifesto gerado pela descoberta antes de iniciar downl
 
 ### Relatórios HTML
 
-```bash
-python -m pip install -r apps/analytics/requirements.txt
-streamlit run apps/analytics/app.py
+```powershell
+python apps/analytics/generate_report.py
+Start-Process .\reports\catalog\index.html
 ```
+
+O relatório é autônomo, utiliza somente a biblioteca padrão do Python e pode ser impresso ou salvo em PDF pelo navegador.
 
 ### Stack Docker — build local
 
