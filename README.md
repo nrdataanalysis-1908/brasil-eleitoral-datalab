@@ -1,207 +1,202 @@
 # Brasil Eleitoral DataLab
 
-<p align="center">
-  <img src="docs/assets/brasil-eleitoral-banner.svg" alt="Brasil Eleitoral DataLab — Engenharia, auditoria e inteligência de dados eleitorais" width="100%">
-</p>
+Plataforma de engenharia, auditoria e análise de dados eleitorais brasileiros, com foco em dados públicos, rastreabilidade e processamento reproduzível.
 
-<p align="center">
-  <a href="https://github.com/nrdataanalysis-1908/brasil-eleitoral-datalab/actions/workflows/python-ci.yml"><img src="https://github.com/nrdataanalysis-1908/brasil-eleitoral-datalab/actions/workflows/python-ci.yml/badge.svg?branch=main" alt="Python CI"></a>
-  <a href="https://github.com/nrdataanalysis-1908/brasil-eleitoral-datalab/actions/workflows/api-ci.yml"><img src="https://github.com/nrdataanalysis-1908/brasil-eleitoral-datalab/actions/workflows/api-ci.yml/badge.svg?branch=main" alt="API CI"></a>
-  <a href="https://github.com/nrdataanalysis-1908/brasil-eleitoral-datalab/actions/workflows/web-ci.yml"><img src="https://github.com/nrdataanalysis-1908/brasil-eleitoral-datalab/actions/workflows/web-ci.yml/badge.svg?branch=main" alt="Web CI"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-0B3A5B.svg" alt="MIT"></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10%2B-168bd0.svg" alt="Python"></a>
-  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-20%2B-60e6ff.svg" alt="Node.js"></a>
-</p>
-
-<p align="center">
-<strong>Uma plataforma aberta para descobrir, integrar, validar e analisar dados eleitorais brasileiros.</strong><br>
-Engenharia de dados · Auditoria reproduzível · Inteligência analítica
+<p>
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Node.js-20%2B-339933?logo=nodedotjs&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/Next.js-Web-000000?logo=nextdotjs" alt="Next.js">
+  <img src="https://img.shields.io/badge/Streamlit-Analytics-FF4B4B?logo=streamlit&logoColor=white" alt="Streamlit">
+  <img src="https://img.shields.io/badge/Plotly-Charts-3F4F75?logo=plotly&logoColor=white" alt="Plotly">
+  <img src="https://img.shields.io/badge/Source-TSE-0B6E99" alt="TSE">
 </p>
 
 ---
 
-## Visão do projeto
+## Sobre
 
-O Brasil Eleitoral DataLab é uma plataforma independente de engenharia e análise de dados públicos do ecossistema eleitoral brasileiro. Reúne catálogo de fontes, pipelines de ingestão, validação de integridade, contratos de dados, transformação analítica e interfaces de exploração.
+O Brasil Eleitoral DataLab organiza diferentes conjuntos públicos do ecossistema eleitoral em um fluxo técnico único: descoberta de fontes, ingestão de arquivos, validação, transformação e exploração analítica.
 
-A referência de organização e documentação é o projeto [DataUrnas-BR](https://github.com/alissonlinneker/dataUrnas-BR): apresentação objetiva do escopo, destaques, arquitetura, pipeline, painel, instalação, uso, documentação, limitações e roadmap. O DataLab amplia o escopo para além da auditoria de arquivos de urna, estruturando diferentes domínios de dados eleitorais em uma arquitetura rastreável.
+O projeto toma como referência de documentação e apresentação o [DataUrnas-BR](https://github.com/alissonlinneker/dataUrnas-BR), mas possui escopo e implementação próprios. Enquanto a referência é centrada em auditoria de arquivos de urna, este laboratório busca integrar diferentes domínios eleitorais e oferecer uma base extensível para análises reproduzíveis.
 
-> [!IMPORTANT]
-> A documentação distingue o que está implementado do que ainda depende de execução ou validação. A descoberta CKAN, downloader, extração segura, contratos e pipeline local possuem implementação. A ingestão integral de dados reais do TSE e a publicação de resultados eleitorais consolidados ainda não estão concluídas.
+## O que o projeto reúne
 
-## Sumário
-
-- [Destaques](#destaques)
-- [Domínios de dados](#domínios-de-dados)
-- [Painel analítico](#painel-analítico)
-- [Arquitetura](#arquitetura)
-- [Pipeline e metodologia](#pipeline-e-metodologia)
-- [Instalação e execução](#instalação-e-execução)
-- [Estrutura do projeto](#estrutura-do-projeto)
-- [Estado atual e roadmap](#estado-atual-e-roadmap)
-- [Fontes oficiais](#fontes-oficiais)
-- [Limitações](#limitações)
-- [Licença](#licença)
-
-## Destaques
-
-- Catálogo de dados públicos do TSE via CKAN, com paginação e checkpoint.
-- Manifesto local com hash SHA-256 e rastreabilidade dos metadados.
-- Download resiliente com streaming, retomada HTTP Range/ETag e verificação de integridade.
-- Extração ZIP segura com limites de tamanho, validação de caminhos e CRC.
-- Contratos versionados para schema, tipos, obrigatoriedade e chaves.
-- Pipeline inicial Bronze / Silver / Gold com fixtures reproduzíveis.
-- API Node.js, interface Next.js e aplicação analítica Streamlit.
-- Testes automatizados e workflows de CI.
-
-## Domínios de dados
-
-| Domínio | Exemplos | Fonte prioritária |
+| Módulo | Responsabilidade | Tecnologia |
 |---|---|---|
-| Resultados eleitorais | Votos por cargo, candidatura, partido, município, zona e seção | TSE |
-| Candidaturas | Perfil, situação, partido, federação, bens e propostas | TSE |
-| Eleitorado | Perfil agregado, comparecimento, abstenção e locais | TSE |
-| Urnas e totalização | Boletins de urna, logs, RDV e arquivos de totalização | TSE |
-| Financiamento | Receitas, despesas, doadores e fornecedores | TSE |
-| Pesquisas | Registros, institutos, contratantes e resultados publicados | TSE |
-| Partidos | Órgãos partidários e registros partidários | TSE |
-| Geografia eleitoral | Municípios, zonas, seções e códigos geográficos | TSE / IBGE |
-| Contexto institucional | Legislação, normas e dados públicos correlatos | Órgãos oficiais |
-
-A inclusão de um domínio no escopo não significa que seus dados já estejam integrados. Disponibilidade, granularidade e periodicidade variam por conjunto.
+| Descoberta | Consulta e catalogação dos conjuntos publicados pelo TSE | Python / CKAN |
+| Ingestão | Download resiliente, retomada e verificação de integridade | Python |
+| Qualidade | Contratos, schema, tipos, chaves e regras de validação | Python |
+| Transformação | Organização dos dados em Bronze, Silver e Gold | Python |
+| API | Exposição de catálogo e verificações de serviço | Node.js |
+| Aplicação web | Navegação e visualização geral do projeto | Next.js |
+| Analytics | Exploração, filtros, gráficos e exportação | Streamlit / Plotly |
 
 ## Painel analítico
 
-O repositório possui duas interfaces complementares:
+O Streamlit explora os metadados coletados no catálogo CKAN do TSE. Inclui:
 
-- Web Next.js: navegação, visão geral e catálogo.
-- Streamlit: exploração interativa dos metadados coletados do catálogo CKAN.
+- distribuição de recursos por formato;
+- quantidade de conjuntos por órgão;
+- conjuntos criados por ano;
+- atualizações do catálogo ao longo do tempo;
+- conjuntos com maior número de recursos;
+- filtros por órgão, formato e texto;
+- tabela de consulta e exportação CSV.
 
-O painel Streamlit apresenta gráficos de recursos por formato, conjuntos por órgão, distribuição temporal de criação e atualização, e conjuntos com maior quantidade de recursos. Os filtros permitem segmentar por órgão, formato e busca textual; a tabela filtrada pode ser exportada em CSV.
-
-> Os gráficos atuais descrevem metadados do catálogo. Não representam votação. Indicadores de votos, comparecimento, abstenção ou desempenho de candidaturas só serão publicados após ingestão e validação dos arquivos oficiais correspondentes.
+> Os gráficos disponíveis nesta etapa representam a estrutura e os metadados do catálogo. Não representam votos, candidatos, comparecimento ou abstenção. Indicadores eleitorais só serão apresentados após ingestão e validação dos arquivos oficiais correspondentes.
 
 ## Arquitetura
 
-    Fontes oficiais (TSE / IBGE / Dados.gov.br)
-                      |
-                      v
-          Descoberta e catálogo CKAN
-                      |
-                      v
-         Ingestão / download / extração
-                      |
-                      v
-           Bronze -> Silver -> Gold
-                      |
-              +-------+-------+
-              |               |
-              v               v
-           Node API       DuckDB / Parquet
-              |               |
-              v               v
-           Next.js          Streamlit
-            Web UI        Analytics UI
-
-| Componente | Tecnologia | Responsabilidade |
-|---|---|---|
-| Ingestão e qualidade | Python | Descoberta, download, checksum, extração e validação |
-| Transformação | Python / Pandas | Normalização e publicação de camadas analíticas |
-| API | Node.js | Exposição do catálogo e health checks |
-| Web | Next.js / TypeScript | Interface pública e navegação |
-| Analytics | Streamlit / Plotly | Gráficos e exploração interativa |
-| Armazenamento analítico | Parquet / DuckDB (em evolução) | Consulta analítica |
-| Persistência de serviço | PostgreSQL (planejado) | Dados transacionais e serviços compartilhados |
+    TSE / CKAN / outras fontes públicas
+                   |
+                   v
+          Descoberta de dados
+                   |
+                   v
+       Download e extração segura
+                   |
+                   v
+        Validação por contratos
+                   |
+                   v
+          Bronze -> Silver -> Gold
+                   |
+             +-----+------+
+             |            |
+             v            v
+          Node API    Dados analíticos
+             |         (evolução)
+             v            |
+          Next.js      Streamlit
+           Web UI     Plotly Analytics
 
 ### Camadas de dados
 
-- Bronze: preservação dos arquivos de origem, metadados, hashes e evidências de ingestão.
-- Silver: padronização de schema, tipos, códigos e regras de qualidade.
-- Gold: tabelas analíticas com granularidade, semântica e metodologia documentadas.
+- Bronze: arquivos originais, metadados de origem, hashes e evidências de ingestão.
+- Silver: dados normalizados, tipados e submetidos às regras de qualidade.
+- Gold: tabelas analíticas com granularidade e semântica documentadas.
 
-## Pipeline e metodologia
+## Pipeline de dados
 
-1. Descoberta dos conjuntos e recursos publicados no CKAN do TSE.
-2. Geração de manifesto, hash SHA-256 e checkpoint de retomada.
-3. Download com streaming, retomada HTTP Range/ETag e verificação de integridade.
-4. Extração ZIP com validação de caminhos, limites de tamanho e teste CRC.
-5. Validação por contratos de dados versionados.
-6. Transformação inicial Bronze/Silver/Gold com fixtures normalizadas.
-7. Exposição dos metadados via API e aplicações de exploração.
+1. Descoberta de conjuntos e recursos no catálogo CKAN do TSE.
+2. Geração de manifesto, hash SHA-256 e checkpoint.
+3. Download com streaming, retry/backoff e retomada HTTP Range/ETag.
+4. Extração ZIP com validação de caminhos, limites e CRC.
+5. Validação de registros por contratos versionados.
+6. Transformação inicial Bronze/Silver/Gold com dados de teste normalizados.
+7. Consulta por API e interfaces de exploração.
 
-Os controles implementados incluem idempotência por hash, escrita atômica, retry/backoff, checkpoint, validação de schema e logs estruturados. A integração ponta a ponta com recursos reais do TSE ainda precisa ser executada em ambiente com acesso ao portal.
+Os componentes de ingestão e transformação possuem testes automatizados com fixtures. A execução integral contra os arquivos reais do TSE ainda precisa ser realizada e validada em ambiente com acesso à fonte.
 
-## Instalação e execução
+## Fontes de dados no escopo
+
+| Domínio | Exemplos |
+|---|---|
+| Resultados | Votos por cargo, candidatura, partido, município, zona e seção |
+| Candidaturas | Situação, partido, federação, bens e propostas |
+| Eleitorado | Perfil agregado, comparecimento, abstenção e locais |
+| Urnas e totalização | Boletins de urna, logs, RDV e arquivos de totalização |
+| Financiamento | Receitas, despesas, doadores e fornecedores |
+| Pesquisas | Registros, institutos, contratantes e resultados publicados |
+| Geografia | Municípios, zonas, seções e códigos geográficos |
+
+A presença de um domínio nesta tabela indica escopo planejado, não integração concluída.
+
+## Como executar
 
 ### Requisitos
 
-- Python 3.10+
-- Node.js 20+
-- Docker e Docker Compose (opcional)
+- Python 3.10 ou superior
+- Node.js 20 ou superior
+- Docker Compose (opcional)
 
-### Descobrir o catálogo TSE
+### 1. Clonar e instalar
 
     git clone https://github.com/nrdataanalysis-1908/brasil-eleitoral-datalab.git
     cd brasil-eleitoral-datalab
     python -m venv .venv
 
-Ative o ambiente virtual e instale as dependências:
+Linux/macOS:
+
+    source .venv/bin/activate
+
+Windows PowerShell:
+
+    .venv\Scripts\Activate.ps1
+
+Instalar dependências:
 
     python -m pip install -e ".[dev]"
+
+### 2. Descobrir o catálogo do TSE
+
     python scripts/discover_tse_catalog.py
 
-A descoberta requer acesso à internet. Os metadados são gravados localmente em catalog/tse/datasets/, incluindo manifesto e checkpoint.
+A descoberta requer acesso à internet. O processo gera os metadados e o manifesto local em catalog/tse/datasets/.
 
-### Iniciar o painel Streamlit
+### 3. Abrir o painel Streamlit
 
     python -m pip install -r apps/analytics/requirements.txt
     streamlit run apps/analytics/app.py
 
-O painel lê o manifesto local produzido pela descoberta CKAN. Sem manifesto, informa o comando necessário e não cria gráficos com dados fictícios.
+O painel utiliza o manifesto gerado na etapa de descoberta. Se ele ainda não existir, a aplicação informa como gerá-lo; não utiliza dados fictícios.
 
-### Iniciar a stack completa
+### 4. Subir os serviços com Docker
 
     docker compose up --build
 
-Consulte a documentação da stack local para portas, variáveis e serviços.
+Consulte docs/development-stack.md para detalhes da stack local.
 
-## Estrutura do projeto
+## Estrutura do repositório
 
     brasil-eleitoral-datalab/
     ├── apps/
-    │   ├── web/                 # Next.js / TypeScript
-    │   └── analytics/           # Streamlit / Plotly
+    │   ├── web/                  # Next.js / TypeScript
+    │   └── analytics/            # Streamlit / Plotly
     ├── services/
-    │   └── api/                 # API Node.js
+    │   └── api/                  # API Node.js
     ├── src/brasil_eleitoral/
-    │   ├── ckan/                # Cliente e catálogo CKAN
-    │   ├── ingestion/           # Download e extração
-    │   ├── validation/          # Contratos e qualidade
-    │   ├── transformation/      # Bronze / Silver / Gold
-    │   └── observability.py     # Logs e eventos
-    ├── catalog/                 # Fontes e manifests locais
-    ├── contracts/               # Contratos versionados
-    ├── docs/                    # Arquitetura e documentação
-    ├── examples/                # Fixtures reproduzíveis
-    ├── scripts/                 # Entradas CLI
-    └── tests/                   # Testes automatizados
+    │   ├── ckan/                 # Cliente e catálogo CKAN
+    │   ├── ingestion/            # Download e extração
+    │   ├── validation/           # Contratos e qualidade
+    │   ├── transformation/       # Bronze / Silver / Gold
+    │   └── observability.py      # Logs estruturados
+    ├── contracts/                # Contratos versionados
+    ├── catalog/                  # Manifestos e metadados locais
+    ├── docs/                     # Documentação técnica
+    ├── examples/                 # Fixtures de referência
+    ├── scripts/                  # Entradas de execução
+    └── tests/                    # Testes automatizados
 
-## Estado atual e roadmap
+## Estado de desenvolvimento
 
-| Capacidade | Estado |
+| Componente | Situação |
 |---|---|
 | Cliente CKAN, paginação e descoberta | Implementado; execução real pendente |
 | Manifesto, SHA-256 e checkpoint | Implementado |
-| Downloader com retomada Range/ETag | Implementado; teste real de origem pendente |
-| Extração ZIP segura | Implementado e coberto por testes |
-| Contratos de dados e validações | Implementado e coberto por testes |
-| Pipeline Bronze/Silver/Gold com fixtures | Implementado; Parquet/DuckDB pendentes |
-| API de catálogo e health checks | Implementado; suíte API requer validação final |
-| Web Next.js | Implementação inicial publicada |
-| Streamlit com gráficos de metadados | Implementação em evolução |
-| Ingestão integral de dados eleitorais reais | Pendente |
+| Download com retomada Range/ETag | Implementado; validação com fonte real pendente |
+| Extração ZIP segura | Implementado e testado |
+| Contratos e validação de dados | Implementado e testado |
+| Pipeline Bronze/Silver/Gold | Implementação inicial com fixtures |
+| API de catálogo | Implementada; validação final da suíte pendente |
+| Web Next.js | Interface inicial |
+| Streamlit / Plotly | Gráficos de metadados implementados |
+| Ingestão integral de dados reais do TSE | Pendente |
 | Indicadores eleitorais Gold e mapas por UF | Pendente |
-| Monitoramento gerenciado e alertas | Pendente |
+| DuckDB / Parquet em produção | Pendente |
+| Monitoramento gerenciado | Pendente |
+
+## Documentação técnica
+
+- [Fontes e catálogo de dados](docs/data-sources.md)
+- [Descoberta CKAN](docs/ckan-discovery.md)
+- [Download de recursos](docs/resource-downloads.md)
+- [Extração segura](docs/safe-extraction.md)
+- [Contratos de dados](docs/data-contracts.md)
+- [Pipeline Medallion](docs/medallion-pipeline.md)
+- [Operação e observabilidade](docs/operations.md)
+- [Stack de desenvolvimento](docs/development-stack.md)
+- [Aplicação Streamlit](docs/streamlit.md)
 
 ## Fontes oficiais
 
@@ -209,20 +204,17 @@ Consulte a documentação da stack local para portas, variáveis e serviços.
 - [API CKAN do TSE](https://dadosabertos.tse.jus.br/api/3/action/package_search)
 - [Estatísticas eleitorais do TSE](https://www.tse.jus.br/eleicoes/estatisticas)
 - [IBGE](https://www.ibge.gov.br/)
-- [Dados.gov.br](https://dados.gov.br/)
+- [Portal Brasileiro de Dados Abertos](https://dados.gov.br/)
 
-## Limitações
+## Princípios
 
-- A descoberta CKAN e o downloader ainda precisam de execução real contra o portal para confirmar disponibilidade e cobertura.
-- O pipeline Medallion usa fixtures normalizadas; o mapeamento de todos os schemas nativos do TSE não está concluído.
-- O Streamlit analisa metadados do catálogo, não resultados eleitorais.
-- PostgreSQL, DuckDB/Parquet em produção, indicadores Gold e mapas geográficos oficiais permanecem em evolução.
-- Dados agregados não autorizam inferências sobre escolhas ou comportamentos individuais.
-
-## Referência documental
-
-A organização da documentação toma como referência o [DataUrnas-BR](https://github.com/alissonlinneker/dataUrnas-BR). O escopo, a implementação, os dados e as conclusões do Brasil Eleitoral DataLab são próprios e não devem ser confundidos com os resultados daquele projeto.
+- Rastreabilidade da origem à camada analítica.
+- Integridade por hash, checksum e validação de schema.
+- Processamento idempotente e reprodutível.
+- Separação entre dado observado, interpretação e hipótese.
+- Transparência sobre cobertura, limitações e etapas ainda não concluídas.
+- Uso de dados agregados sem inferir escolhas ou comportamentos individuais.
 
 ## Licença
 
-Código e documentação original sob licença MIT. A licença não altera termos de uso, direitos autorais ou condições de redistribuição dos dados publicados por órgãos externos. Consulte os metadados e a licença da fonte antes de redistribuir conjuntos.
+O código original deste repositório é distribuído sob a licença MIT. Os conjuntos de dados de terceiros permanecem sujeitos às licenças e condições definidas por seus respectivos órgãos publicadores.
