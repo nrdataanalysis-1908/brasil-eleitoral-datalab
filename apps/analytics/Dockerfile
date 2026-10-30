@@ -1,10 +1,8 @@
 FROM python:3.12-slim
 WORKDIR /app
-COPY apps/analytics/requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-COPY apps/analytics ./apps/analytics
-COPY scripts ./scripts
+COPY apps/analytics/generate_report.py ./apps/analytics/generate_report.py
 COPY catalog ./catalog
-ENV PYTHONPATH=/app
+RUN mkdir -p /app/reports/catalog
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 EXPOSE 8501
-CMD ["streamlit", "run", "apps/analytics/app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+CMD ["sh", "-c", "python apps/analytics/generate_report.py --manifest /app/catalog/tse/datasets/manifest.json --output /app/reports/catalog/index.html && python -m http.server 8501 --bind 0.0.0.0 --directory /app/reports"]
