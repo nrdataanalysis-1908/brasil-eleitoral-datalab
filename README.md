@@ -6,7 +6,7 @@
   <a href="https://img.shields.io/badge/Python-3.10%2B-3776AB"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python"></a>
   <a href="https://img.shields.io/badge/Node.js-20%2B-339933"><img src="https://img.shields.io/badge/Node.js-20%2B-168bd0?logo=nodedotjs&logoColor=white" alt="Node.js"></a>
   <a href="https://img.shields.io/badge/Next.js-Web-000000"><img src="https://img.shields.io/badge/Next.js-Web-000000?logo=nextdotjs" alt="Next.js"></a>
-  <a href="https://img.shields.io/badge/HTML-Reports-168bd0"><img src="https://img.shields.io/badge/HTML-Reports-168bd0?logo=html5&logoColor=white" alt="Streamlit Analytics"></a>
+  <a href="https://img.shields.io/badge/Streamlit-Analytics-FF4B4B"><img src="https://img.shields.io/badge/Streamlit-Analytics-FF4B4B?logo=streamlit&logoColor=white" alt="Streamlit Analytics"></a>
   <a href="https://img.shields.io/badge/Source-TSE-168bd0"><img src="https://img.shields.io/badge/Source-TSE-0B6E99" alt="TSE"></a>
 </p>
 
@@ -62,33 +62,34 @@ A plataforma diferencia explicitamente capacidades implementadas, integrações 
 - Extração ZIP defensiva contra path traversal, arquivos especiais e pacotes excessivos.
 - Contratos versionados para tipos, nulabilidade, campos obrigatórios, valores permitidos e chaves.
 - Pipeline inicial Bronze/Silver/Gold com fixtures reproduzíveis.
-- API Node.js, interface principal Next.js e relatórios HTML autônomos gerados em Python.
+- API Node.js, interface institucional Next.js e painel analítico Streamlit com Plotly.
 - Testes automatizados e workflows de CI para os componentes do projeto.
 
 ## Painel e relatórios
 
 A interface Next.js atende à navegação institucional e à consulta pela API. O serviço Analytics utiliza Streamlit como painel analítico interativo, com gráficos Plotly, filtros globais e exportações. O relatório HTML autônomo permanece disponível como artefato complementar para impressão e distribuição. O painel apresenta:
 
-- distribuição dos recursos por formato;
-- conjuntos publicados por organização;
-- quantidade de conjuntos descobertos;
-- volume de recursos catalogados;
-- órgãos responsáveis;
-- inventário dos conjuntos e suas datas de atualização.
+- indicadores do catálogo carregado e cobertura da descoberta;
+- distribuição de recursos por formato e conjuntos por órgão;
+- ranking de conjuntos por quantidade de recursos;
+- filtros globais por órgão, formato e texto;
+- explorador de conjuntos e recursos com acesso às URLs originais;
+- exportação dos recortes em CSV e Excel.
 
-O relatório é uma fotografia estática e reproduzível dos metadados presentes no manifesto local. A interface Next.js oferece a exploração interativa do catálogo.
+O painel Streamlit permite explorar os metadados carregados localmente. O relatório HTML autônomo permanece como opção complementar para impressão e distribuição.
 
 <p align="center">
-  <img src="docs/assets/analytics-overview.svg" alt="Esquema visual do relatório HTML com indicadores e gráficos de metadados" width="100%">
+  <img src="docs/assets/analytics-overview.svg" alt="Esquema visual do painel analítico de metadados" width="100%">
 </p>
 
-> A imagem acima é um esquema ilustrativo, não uma captura da aplicação nem uma amostra de dados. Os relatórios usam somente metadados efetivamente presentes no manifesto local. Nesta etapa, não representam votos, candidatos, comparecimento ou abstenção.
+> A imagem acima é um esquema ilustrativo, não uma captura da aplicação nem uma amostra de dados. O painel usa somente metadados efetivamente presentes no manifesto local. Nesta etapa, não representam votos, candidatos, comparecimento ou abstenção.
 
 ### Executar o painel Streamlit
 
 ```powershell
 python scripts/discover_tse_catalog.py
-python -m pip install -r apps/analytics/requirements.txt\nstreamlit run apps/analytics/app.py
+python -m pip install -r apps/analytics/requirements.txt
+streamlit run apps/analytics/app.py
 ```
 
 A aplicação abre em `http://localhost:8501`. A descoberta exige acesso à internet e grava o manifesto em `catalog/tse/datasets/`. Sem catálogo local, o painel informa como gerar a base, sem fabricar indicadores.
@@ -211,8 +212,8 @@ Consulte as opções e o manifesto gerado pela descoberta antes de iniciar downl
 ### Painel analítico Streamlit
 
 ```powershell
-python apps/analytics/generate_report.py
-Start-Process .\reports\catalog\index.html
+python -m pip install -r apps/analytics/requirements.txt
+streamlit run apps/analytics/app.py
 ```
 
 Acesse `http://localhost:8501`. Para executar a stack integrada com Docker, use `docker compose up --build`.
@@ -272,7 +273,8 @@ brasil-eleitoral-datalab/
 | Pipeline Bronze/Silver/Gold | Implementação inicial com fixtures normalizadas |
 | API de catálogo e health checks | Implementada; 4 testes automatizados aprovados no GitHub Actions |
 | Interface Next.js | Implementação inicial |
-| Painel analítico Streamlit | Implementado para metadados CKAN; execução local pendente |\n| Relatórios HTML autônomos | Gerador complementar implementado |
+| Painel analítico Streamlit | Implementado para metadados CKAN; execução local pendente |
+| Relatórios HTML autônomos | Gerador complementar implementado |
 | Ingestão integral de dados eleitorais reais | Pendente |
 | Indicadores eleitorais Gold | Pendente |
 | Mapas oficiais por UF | Pendente |
@@ -308,7 +310,8 @@ brasil-eleitoral-datalab/
 - [Operação e observabilidade](docs/operations.md)
 - [Stack de desenvolvimento](docs/development-stack.md)
 - [Execução das imagens publicadas no GHCR](docs/ghcr-deployment.md)
-- [Painel analítico Streamlit](docs/streamlit-dashboard.md)\n- [Relatórios HTML complementares](docs/html-reports.md)
+- [Painel analítico Streamlit](docs/streamlit-dashboard.md)
+- [Relatórios HTML complementares](docs/html-reports.md)
 
 ## Licença
 
