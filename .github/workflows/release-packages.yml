@@ -71,11 +71,15 @@ jobs:
           IS_PRERELEASE: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || contains(github.ref_name, '-') }}
         run: |
           if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" \
-              --verify-tag \
-              --generate-notes \
-              --title "Brasil Eleitoral DataLab $TAG" \
-              ${IS_PRERELEASE:+--prerelease}
+            PRERELEASE_FLAG=""
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+          gh release create "$TAG" \
+            --verify-tag \
+            --generate-notes \
+            --title "Brasil Eleitoral DataLab $TAG" \
+            $PRERELEASE_FLAG
           fi
 
   publish-containers:
